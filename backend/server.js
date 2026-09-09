@@ -24,6 +24,7 @@ function auth(req, res, next) {
 }
 
 app.post('/api/register', async (req, res) => {
+  try {
   const { name, email, password } = req.body || {};
   if (!name || !email || !password) return res.status(400).json({ error: 'Name, email and password required' });
   if (String(password).length < 6) return res.status(400).json({ error: 'Password must be 6+ characters' });
@@ -31,20 +32,25 @@ app.post('/api/register', async (req, res) => {
   const passHash = await bcrypt.hash(String(password), 10);
   const user = await db.createUser({ name: String(name).slice(0, 60), email, passHash });
   res.json({ token: sign(user), user: db.publicUser(user) });
+  } catch (e) { console.error('register:', e.message); return res.status(500).json({ error: 'Database unavailable, try again in a minute.' }); }
 });
 
 app.post('/api/login', async (req, res) => {
+  try {
   const { email, password } = req.body || {};
   const user = email && await db.findByEmail(email);
   if (!user || !(await bcrypt.compare(String(password || ''), user.passHash)))
     return res.status(401).json({ error: 'Wrong email or password' });
   res.json({ token: sign(user), user: db.publicUser(user) });
+  } catch (e) { console.error('login:', e.message); return res.status(500).json({ error: 'Database unavailable, try again in a minute.' }); }
 });
 
 app.get('/api/me', auth, async (req, res) => {
+  try {
   const user = await db.findByEmail(req.user.email);
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ user: db.publicUser(user) });
+  } catch (e) { console.error('me:', e.message); return res.status(500).json({ error: 'Database unavailable, try again in a minute.' }); }
 });
 
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
