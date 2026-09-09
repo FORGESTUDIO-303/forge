@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORGE — Game Library, Hardware Control & Studio Apps</title>
+<meta name="description" content="OmniLauncher, Forge Control, Pulse Link, Boost Engine, Lumina Studio, StreamForge. Premium offline-first apps for PC, phone and web.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top"><img src="assets/logo.svg" alt="FORGE logo" width="30" height="30"> FORGE</a>
+    <nav class="links">
+      <a href="#projects">Apps</a>
+      <a href="#games">Games</a>
+      <a href="#suite">Suite</a>
+      <a href="#download">Download</a>
+    </nav>
+    <div class="nav-cta">
+      <input id="search" type="search" placeholder="Search apps…" aria-label="Search apps">
+      <button class="btn small primary" id="loginBtn">Log in</button>
+      <span class="user-chip" id="userChip" style="display:none"></span>
+      <a class="btn small" href="#download">Get all</a>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section class="hero wrap">
+  <div class="hero-txt">
+    <p class="kicker">OFFLINE-FIRST • PC • PHONE • WEB</p>
+    <h1>One library.<br>Every game. Every device.</h1>
+    <p class="sub">OmniLauncher unifies your PC &amp; console collection with playtime tracking, calm organization and real launching on desktop — no account, no cloud lock-in. Pair it with Forge Control for hardware, Pulse Link for peripherals and Boost Engine for speed.</p>
+    <div class="row">
+      <a class="btn primary" href="#download" data-dl="omnilauncher-windows">⬇ Download for Windows</a>
+      <a class="btn ghost" href="#projects">Explore the suite</a>
+    </div>
+    <div class="plat">
+      <span>Windows</span><span>Android</span><span>Linux</span><span>macOS</span><span>iOS</span><span>Web</span>
+    </div>
+  </div>
+  <div class="hero-card" aria-hidden="true">
+    <img class="hero-art" src="assets/hero.svg" alt="FORGE suite preview" width="520" height="340">
+    <div class="win">
+      <div class="win-bar"><i></i><i></i><i></i><span>OmniLauncher — Library</span></div>
+      <div class="win-grid">
+        <div class="g" style="--c:#22d3ee">NL<br><small>Neon Rogue</small></div>
+        <div class="g" style="--c:#a78bfa">CB<br><small>Card Battler</small></div>
+        <div class="g" style="--c:#f472b6">IE<br><small>Idle Empire</small></div>
+        <div class="g" style="--c:#34d399">RC<br><small>Rhythm Combat</small></div>
+      </div>
+      <div class="win-foot"><span>▶ 128h played</span><span>★ 14 favorites</span><span>⛁ offline</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="stats wrap">
+  <div><b>25+</b><span>apps &amp; games planned</span></div>
+  <div><b>6</b><span>platforms from one codebase</span></div>
+  <div><b>100%</b><span>offline-first core</span></div>
+  <div><b>0</b><span>ads • 0 trackers</span></div>
+</section>
+
+<section id="projects" class="wrap">
+  <div class="sec-head">
+    <div><p class="kicker">MAIN PROJECTS</p><h2>Flagship apps</h2></div>
+    <div class="filters" role="tablist">
+      <button class="chip on" data-f="all">All</button>
+      <button class="chip" data-f="library">Library</button>
+      <button class="chip" data-f="hardware">Hardware</button>
+      <button class="chip" data-f="creator">Creator</button>
+    </div>
+  </div>
+  <div class="grid" id="appGrid">
+    <article class="card" data-cat="library" data-name="omnilauncher universal game library">
+      <img class="card-art" src="assets/app-omni.svg" alt="OmniLauncher icon" width="56" height="56"><div class="tag">LIBRARY</div><h3>OmniLauncher</h3>
+      <p>Universal game library: grid + list views, manual adding, playtime tracking, favorites, search, categories, platform filters, real launching on desktop.</p>
+      <div class="row"><a class="btn small primary" href="#download" data-dl="omnilauncher-windows">Windows</a><a class="btn small" href="#download" data-dl="omnilauncher-android">Android</a><a class="btn small" href="#download" data-dl="omnilauncher-web">Web</a></div>
+    </article>
+    <article class="card" data-cat="hardware" data-name="forge control system hardware suite monitoring rgb fans">
+      <img class="card-art" src="assets/app-forge.svg" alt="Forge Control icon" width="56" height="56"><div class="tag">HARDWARE</div><h3>Forge Control</h3>
+      <p>System &amp; hardware suite: CPU/GPU/RAM monitoring, temps, fans, performance modes, fan-curve editor, RGB control, profiles, dashboard.</p>
+      <div class="row"><a class="btn small primary" href="#download" data-dl="forge-windows">Windows</a><a class="btn small" href="#download" data-dl="forge-android">Android</a></div>
+    </article>
+    <article class="card" data-cat="hardware" data-name="pulse link peripheral control center rgb macro dpi mouse keyboard headset">
+      <img class="card-art" src="assets/app-pulse.svg" alt="Pulse Link icon" width="56" height="56"><div class="tag">HARDWARE</div><h3>Pulse Link</h3>
+      <p>Peripheral control center: layered RGB effects, macro editor, DPI &amp; sensitivity, headset + keyboard + mouse settings, profiles.</p>
+      <div class="row"><a class="btn small primary" href="#download" data-dl="pulse-windows">Windows</a><a class="btn small" href="#download" data-dl="pulse-web">Web</a></div>
+    </article>
+    <article class="card" data-cat="hardware" data-name="boost engine game optimizer booster network cleanup">
+      <img class="card-art" src="assets/app-boost.svg" alt="Boost Engine icon" width="56" height="56"><div class="tag">PERFORMANCE</div><h3>Boost Engine</h3>
+      <p>One-click game booster: process prioritization, cleanup tools, network optimization, launcher, before/after graphs.</p>
+      <div class="row"><a class="btn small primary" href="#download" data-dl="boost-windows">Windows</a><a class="btn small" href="#download" data-dl="boost-android">Android</a></div>
+    </article>
+    <article class="card" data-cat="hardware" data-name="lumina studio advanced rgb control audio reactive zones">
+      <img class="card-art" src="assets/app-lumina.svg" alt="Lumina Studio icon" width="56" height="56"><div class="tag">HARDWARE</div><h3>Lumina Studio</h3>
+      <p>High-end RGB studio: effects engine, per-zone control, audio-reactive lighting, custom effect creator, live previews.</p>
+      <div class="row"><a class="btn small primary" href="#download" data-dl="lumina-windows">Windows</a><a class="btn small" href="#download" data-dl="lumina-web">Web</a></div>
+    </article>
+    <article class="card" data-cat="creator" data-name="streamforge streaming recording suite scenes obs mixer">
+      <img class="card-art" src="assets/app-stream.svg" alt="StreamForge icon" width="56" height="56"><div class="tag">CREATOR</div><h3>StreamForge</h3>
+      <p>Streaming &amp; recording suite: scenes, display/window/camera/browser sources, transitions, filters, audio mixer, stream + record controls.</p>
+      <div class="row"><a class="btn small primary" href="#download" data-dl="streamforge-windows">Windows</a><a class="btn small" href="#download" data-dl="streamforge-linux">Linux</a></div>
+    </article>
+  </div>
+</section>
+
+<section id="suite" class="wrap">
+  <div class="sec-head"><div><p class="kicker">MORE TOOLS</p><h2>Everyday &amp; creator kit</h2></div></div>
+  <div class="grid mini">
+    <div class="m"><b>RGB Hub</b><span>Cross-brand lighting sync</span></div>
+    <div class="m"><b>Overlay Pro</b><span>FPS • temps • frametimes</span></div>
+    <div class="m"><b>Controller Companion</b><span>Remap + overlay + gyro</span></div>
+    <div class="m"><b>Live Wallpaper Studio</b><span>Particles • audio reactive</span></div>
+    <div class="m"><b>Soundboard Studio</b><span>Hotkeys • voice FX</span></div>
+    <div class="m"><b>Clip Studio</b><span>Instant clips • timeline</span></div>
+    <div class="m"><b>Mod Manager Ultimate</b><span>One-click • conflicts</span></div>
+    <div class="m"><b>Cloud Save Syncer</b><span>Versions • local + cloud</span></div>
+  </div>
+</section>
+
+<section id="games" class="wrap">
+  <div class="sec-head"><div><p class="kicker">GAME IDEAS</p><h2>Playable concepts</h2></div></div>
+  <div class="grid mini">
+    <div class="m"><b>Neon Rogue</b><span>Cyberpunk roguelike</span></div>
+    <div class="m"><b>Card Battler Legends</b><span>Animated card duels</span></div>
+    <div class="m"><b>Idle Empire Tycoon</b><span>Deep idle progression</span></div>
+    <div class="m"><b>Rhythm Combat</b><span>Rhythm × action</span></div>
+  </div>
+</section>
+
+<section id="download" class="wrap dl">
+  <div>
+    <p class="kicker">DOWNLOAD</p>
+    <h2>Get the suite</h2>
+    <p class="sub">Builds publish here. Buttons below are wired — drop your <code>.exe</code> / <code>.apk</code> / web folders into <code>A:\apps\</code> and they light up automatically. Today everything runs fully offline from this drive.</p>
+    <div class="row" id="dlBtns">
+      <button class="btn primary" data-dl="omnilauncher-windows">⬇ OmniLauncher — Windows</button>
+      <button class="btn" data-dl="forge-windows">⬇ Forge Control — Windows</button>
+      <button class="btn" data-dl="pulse-windows">⬇ Pulse Link — Windows</button>
+      <button class="btn" data-dl="boost-windows">⬇ Boost Engine — Windows</button>
+    </div>
+    <p id="dlMsg" class="msg" role="status"></p>
+  </div>
+  <div class="sys">
+    <h3>System requirements</h3>
+    <ul>
+      <li>Windows 10/11 64-bit • 4GB RAM • 300MB free</li>
+      <li>Android 10+ • 2GB RAM • 150MB free</li>
+      <li>Web: any modern Chrome / Edge, no install</li>
+      <li>Data stays local — PostgreSQL sync optional later</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span id="yr"></span></div></footer>
+<div class="modal" id="authModal" aria-hidden="true">
+  <div class="box" role="dialog" aria-label="Login or register">
+    <div class="tabs"><button class="chip on" id="tabLogin">Log in</button><button class="chip" id="tabRegister">Register</button></div>
+    <form id="authForm">
+      <div id="nameRow" style="display:none"><label>Name<input id="authName" maxlength="60" placeholder="Your name"></label></div>
+      <label>Email<input id="authEmail" type="email" required placeholder="you@mail.com"></label>
+      <label>Password<input id="authPass" type="password" required minlength="6" placeholder="6+ characters"></label>
+      <button class="btn primary" id="authGo" type="submit">Log in</button>
+      <div class="sso-div"><span>or continue with</span></div>
+      <div class="sso-row">
+        <button type="button" class="sso" data-sso="google"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.3H12v4.5h6.5c-.1 1.1-.8 2.7-2.4 3.8l-.1.1 3.5 2.7.2.1c2.2-2 3.6-5 3.6-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.8-2.9c-1 .7-2.4 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5l-.1.1-3.6 2.8-.1.1C3.5 21.3 7.5 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.7.4-2.4l-.1-.1-3.6-2.8-.1.1C.5 8.6 0 10.2 0 12s.5 3.4 1.4 4.9l3.8-2.5z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.5 0 3.5 2.7 1.4 6.8l3.8 2.9c1-2.9 3.7-5 6.8-5z"/></svg>Google</button>
+        <button type="button" class="sso" data-sso="apple"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.83-.75 1.58.16 2.77.75 3.55 1.9-3.29 1.96-2.5 5.24.53 6.28-.6 1.47-1.62 2.71-2.99 3.74zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>Apple</button>
+        <button type="button" class="sso" data-sso="github"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.77 1.05.77 2.12v3.15c0 .31.21.68.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</button>
+      </div>
+      <p class="msg" id="authMsg" role="status"></p>
+    </form>
+  </div>
+</div>
+<script src="auth.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

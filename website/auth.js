@@ -1,0 +1,72 @@
+// Auth: talks to backend at http://localhost:3000/api (run: node A:\backend\server.js)
+(function () {
+  var API = 'http://localhost:3000/api';
+  var key = 'forge_token';
+  var loginBtn = document.getElementById('loginBtn');
+  var userChip = document.getElementById('userChip');
+  var modal = document.getElementById('authModal');
+  var msg = document.getElementById('authMsg');
+  var tabL = document.getElementById('tabLogin');
+  var tabR = document.getElementById('tabRegister');
+  var nameRow = document.getElementById('nameRow');
+  var mode = 'login';
+
+  function token() { return localStorage.getItem(key); }
+  function setToken(t) { t ? localStorage.setItem(key, t) : localStorage.removeItem(key); }
+  function show(u) {
+    loginBtn.style.display = 'none';
+    userChip.style.display = '';
+    userChip.innerHTML = '👤 ' + escapeHtml(u.name || u.email) + ' <button id="logoutBtn" title="Log out">✕</button>';
+    document.getElementById('logoutBtn').onclick = function () { setToken(null); hide(); };
+  }
+  function hide() { loginBtn.style.display = ''; userChip.style.display = 'none'; userChip.innerHTML = ''; }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function setMode(m) {
+    mode = m; msg.textContent = '';
+    tabL.classList.toggle('on', m === 'login');
+    tabR.classList.toggle('on', m === 'register');
+    nameRow.style.display = m === 'register' ? '' : 'none';
+    document.getElementById('authGo').textContent = m === 'register' ? 'Create account' : 'Log in';
+  }
+  loginBtn.onclick = function () { modal.classList.add('open'); setMode(token() ? 'login' : mode); };
+  modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('open'); });
+  tabL.onclick = function () { setMode('login'); };
+  tabR.onclick = function () { setMode('register'); };
+
+  // SSO: Google / Apple / GitHub — needs internet + OAuth client IDs (November).
+  // Backend /api/auth/:provider returns 501 until keys are set; then it redirects to the provider.
+  document.querySelectorAll('[data-sso]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var p = b.dataset.sso;
+      msg.textContent = 'Connecting to ' + p + '…';
+      fetch(API + '/auth/' + p).then(function (r) {
+        return r.json().then(function (j) { return { status: r.status, j: j }; });
+      }).then(function (x) {
+        if (x.j && x.j.url) { window.location.href = x.j.url; return; }
+        msg.textContent = '⚠ ' + (x.j.error || p + ' login activates in November (needs OAuth client ID + internet). Email login works now.');
+      }).catch(function () { msg.textContent = '⚠ Backend offline — start it: node A:\\backend\\server.js'; });
+    });
+  });
+
+  document.getElementById('authForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('authName').value.trim();
+    var email = document.getElementById('authEmail').value.trim();
+    var pass = document.getElementById('authPass').value;
+    msg.textContent = '…';
+    fetch(API + (mode === 'register' ? '/register' : '/login'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mode === 'register' ? { name: name, email: email, password: pass } : { email: email, password: pass })
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed — is the backend running? (node A:\\backend\\server.js)'); return; }
+      setToken(x.j.token); show(x.j.user); modal.classList.remove('open'); msg.textContent = '';
+    }).catch(function () { msg.textContent = '⚠ Backend offline — start it: node A:\\backend\\server.js'; });
+  });
+
+  // Restore session
+  var t = token();
+  if (t) fetch(API + '/me', { headers: { Authorization: 'Bearer ' + t } })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (j) { if (j && j.user) show(j.user); else setToken(null); })
+    .catch(function () {});
+})();

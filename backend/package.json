@@ -1,0 +1,16 @@
+{
+  "name": "forge-backend",
+  "version": "1.0.0",
+  "description": "FORGE auth + API. File DB now (offline pendrive), swap to PostgreSQL 18 in November via DATABASE_URL.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.23.0"
+  }
+}
