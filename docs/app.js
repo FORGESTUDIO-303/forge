@@ -25,7 +25,7 @@
 
   // Download buttons: maps keys -> expected files under A:\apps\
   var FILES = {
-    'omnilauncher-windows': 'apps/OmniLauncher-Windows.exe',
+    'omnilauncher-windows': 'apps/OmniLauncher-Windows/omnilauncher.exe',
     'omnilauncher-android': 'apps/OmniLauncher-Android.apk',
     'omnilauncher-web': 'apps/omnilauncher-web/index.html',
     'forge-windows': 'apps/ForgeControl-Windows.exe',

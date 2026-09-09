@@ -15,3 +15,7 @@ apps/*/build/
 **/android/local.properties
 **/ios/Pods/
 **/windows/flutter/ephemeral/
+# Native release binaries (ship via GitHub Releases, not git)
+apps/*-Windows/
+*.exe
+*.apk
