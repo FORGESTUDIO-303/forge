@@ -49,4 +49,8 @@ app.get('/api/me', auth, async (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
-app.listen(PORT, () => console.log('FORGE backend on http://localhost:' + PORT));
+// Local/dev: `node backend/server.js`. Serverless (Vercel): api/index.js imports app.
+if (require.main === module) {
+  app.listen(PORT, () => console.log('FORGE backend on http://localhost:' + PORT));
+}
+module.exports = app;

@@ -1,7 +1,7 @@
 {
   "name": "forge-backend",
   "version": "1.0.0",
-  "description": "FORGE auth + API. File DB now (offline pendrive), swap to PostgreSQL 18 in November via DATABASE_URL.",
+  "description": "FORGE auth + API on PostgreSQL 18 (local now, Neon hosted via DATABASE_URL).",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
