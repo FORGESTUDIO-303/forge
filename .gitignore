@@ -6,3 +6,12 @@ backend/.env
 .DS_Store
 Thumbs.db
 System Volume Information/
+# Flutter build outputs + ephemeral (source stays, releases are copied to apps/ + docs/apps/)
+apps/*/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/android/.gradle/
+**/android/local.properties
+**/ios/Pods/
+**/windows/flutter/ephemeral/
