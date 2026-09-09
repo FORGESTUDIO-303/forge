@@ -28,25 +28,14 @@
     nameRow.style.display = m === 'register' ? '' : 'none';
     document.getElementById('authGo').textContent = m === 'register' ? 'Create account' : 'Log in';
   }
-  loginBtn.onclick = function () { modal.classList.add('open'); setMode(token() ? 'login' : mode); };
-  modal.addEventListener('click', function (e) { if (e.target === modal) modal.classList.remove('open'); });
+  function open() { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); setMode(token() ? 'login' : mode); document.getElementById('authEmail').focus(); }
+  function close() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); msg.textContent = ''; loginBtn.focus(); }
+  loginBtn.onclick = open;
+  document.getElementById('authClose').onclick = close;
+  modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('open')) close(); });
   tabL.onclick = function () { setMode('login'); };
   tabR.onclick = function () { setMode('register'); };
-
-  // SSO: Google / Apple / GitHub — needs internet + OAuth client IDs (November).
-  // Backend /api/auth/:provider returns 501 until keys are set; then it redirects to the provider.
-  document.querySelectorAll('[data-sso]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var p = b.dataset.sso;
-      msg.textContent = 'Connecting to ' + p + '…';
-      fetch(API + '/auth/' + p).then(function (r) {
-        return r.json().then(function (j) { return { status: r.status, j: j }; });
-      }).then(function (x) {
-        if (x.j && x.j.url) { window.location.href = x.j.url; return; }
-        msg.textContent = '⚠ ' + (x.j.error || p + ' login activates in November (needs OAuth client ID + internet). Email login works now.');
-      }).catch(function () { msg.textContent = '⚠ Backend offline — start it: node A:\\backend\\server.js'; });
-    });
-  });
 
   document.getElementById('authForm').addEventListener('submit', function (e) {
     e.preventDefault();
@@ -59,7 +48,7 @@
       body: JSON.stringify(mode === 'register' ? { name: name, email: email, password: pass } : { email: email, password: pass })
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
       if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed — is the backend running? (node A:\\backend\\server.js)'); return; }
-      setToken(x.j.token); show(x.j.user); modal.classList.remove('open'); msg.textContent = '';
+      setToken(x.j.token); show(x.j.user); close();
     }).catch(function () { msg.textContent = '⚠ Backend offline — start it: node A:\\backend\\server.js'; });
   });
 

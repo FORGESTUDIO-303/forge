@@ -47,19 +47,6 @@ app.get('/api/me', auth, async (req, res) => {
   res.json({ user: db.publicUser(user) });
 });
 
-// SSO stubs (November): register OAuth apps, set IDs below, then redirect to providers.
-// Google: https://console.cloud.google.com/apis/credentials (Authorized redirect: http://localhost:3000/api/auth/google/callback)
-// GitHub: Settings > Developer settings > OAuth Apps (callback: http://localhost:3000/api/auth/github/callback)
-// Apple: https://developer.apple.com/account (Services ID + key, callback: http://localhost:3000/api/auth/apple/callback)
-const SSO = ['google', 'apple', 'github'];
-app.get('/api/auth/:provider', (req, res) => {
-  const p = String(req.params.provider || '').toLowerCase();
-  if (!SSO.includes(p)) return res.status(404).json({ error: 'Unknown provider' });
-  const ids = { google: process.env.GOOGLE_CLIENT_ID, apple: process.env.APPLE_CLIENT_ID, github: process.env.GITHUB_CLIENT_ID };
-  if (!ids[p]) return res.status(501).json({ error: p + ' SSO not configured yet — add ' + p.toUpperCase() + '_CLIENT_ID in November (email login works now).' });
-  return res.status(501).json({ error: p + ' SSO keys present but OAuth flow lands in November.' });
-});
-
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
 
 app.listen(PORT, () => console.log('FORGE backend on http://localhost:' + PORT));
