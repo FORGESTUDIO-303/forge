@@ -11,8 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve the website so http://localhost:3000 shows A:\website
-app.use(express.static(path.join(__dirname, '..', 'website')));
+// Serve the site so http://localhost:3000 shows A:\docs
+app.use(express.static(path.join(__dirname, '..', 'docs')));
 
 function sign(user) { return jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '7d' }); }
 function auth(req, res, next) {

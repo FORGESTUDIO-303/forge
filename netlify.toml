@@ -1,9 +1,9 @@
 # FORGE — Netlify static hosting (November).
 # Deploy: push this drive to GitHub, Netlify > Add site > pick repo,
-# Build settings: Base directory = (repo root), Publish directory = website
+# Build settings: Base directory = (repo root), Publish directory = docs
 # Then set BACKEND_URL below to your Render/Fly backend so /api + SSO work.
 [build]
-  publish = "website"
+  publish = "docs"
 
 # Proxy API + auth to the Node backend (replace with your live backend URL)
 [[redirects]]

@@ -3,7 +3,7 @@
 Offline-first premium apps for PC, phone and web. One codebase vision,
 zero ads, zero trackers.
 
-**Live site:** `https://FORGESTUDIO-303.github.io/forge/` (GitHub Pages, `/website`)
+**Live site:** `https://FORGESTUDIO-303.github.io/forge/` (GitHub Pages, `/docs`)
 
 ## Flagship apps
 
@@ -22,7 +22,7 @@ and game concepts (Neon Rogue, Card Battler Legends, Idle Empire, Rhythm Combat)
 ## Repo layout
 
 ```
-website/   static site (GitHub Pages) — HTML/CSS/JS/SVG, no build step
+docs/        static site (GitHub Pages) — HTML/CSS/JS/SVG, no build step
 backend/   Node + Express auth API (JWT + bcrypt) on PostgreSQL 18
 apps/      published builds (.exe/.apk/web) — download buttons light up automatically
 Dockerfile container for hosted backend · netlify.toml static-host config
@@ -45,7 +45,7 @@ Default dev DB role: `forge` / `forge-local-dev` @ `localhost:5432/forge`
    `forge-backend` web service + `forge-db` database).
 2. After deploy: `DATABASE_URL="..." node backend/migrate.js` (one-time schema).
 3. Copy the backend URL, e.g. `https://forge-backend.onrender.com`.
-4. In `website/index.html`, uncomment the `FORGE_API_URL` line with that URL
+4. In `docs/index.html`, uncomment the `FORGE_API_URL` line with that URL
    (+ `/api`), commit + push. GitHub Pages rebuilds; login on the public
    link now hits your hosted backend + DB.
 

@@ -6,7 +6,7 @@ WORKDIR /srv
 COPY backend/package*.json ./backend/
 RUN cd backend && npm ci --omit=dev
 COPY backend ./backend
-COPY website ./website
+COPY docs ./docs
 ENV NODE_ENV=production PORT=3000
 EXPOSE 3000
 CMD ["node", "backend/server.js"]
