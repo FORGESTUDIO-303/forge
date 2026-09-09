@@ -11,6 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Serve published builds so /apps/<name>-web works locally too (first: wins over docs/)
+app.use('/apps', express.static(path.join(__dirname, '..', 'apps')));
 // Serve the site so http://localhost:3000 shows A:\docs
 app.use(express.static(path.join(__dirname, '..', 'docs')));
 
