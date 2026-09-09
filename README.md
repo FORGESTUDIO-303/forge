@@ -39,6 +39,16 @@ cd backend && npm install && node server.js
 Default dev DB role: `forge` / `forge-local-dev` @ `localhost:5432/forge`
 (see `backend/.env.example`). Test: `node backend/smoke.js`.
 
+## Go public (Render + hosted Postgres, free tiers)
+
+1. Render → New → Blueprint → repo `FORGESTUDIO-303/forge` (uses `render.yaml`:
+   `forge-backend` web service + `forge-db` database).
+2. After deploy: `DATABASE_URL="..." node backend/migrate.js` (one-time schema).
+3. Copy the backend URL, e.g. `https://forge-backend.onrender.com`.
+4. In `website/index.html`, uncomment the `FORGE_API_URL` line with that URL
+   (+ `/api`), commit + push. GitHub Pages rebuilds; login on the public
+   link now hits your hosted backend + DB.
+
 ## Roadmap
 
 - [x] Website + email login on PostgreSQL

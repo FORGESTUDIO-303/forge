@@ -1,6 +1,8 @@
 // Auth: talks to backend at http://localhost:3000/api (run: node A:\backend\server.js)
 (function () {
-  var API = 'http://localhost:3000/api';
+  // Public backend: Pages injects it via window.FORGE_API_URL (see README);
+  // falls back to localhost for pendrive dev.
+  var API = window.FORGE_API_URL || 'http://localhost:3000/api';
   var key = 'forge_token';
   var loginBtn = document.getElementById('loginBtn');
   var userChip = document.getElementById('userChip');

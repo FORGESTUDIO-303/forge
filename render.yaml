@@ -1,0 +1,24 @@
+# Render blueprint: hosted backend + Postgres, free tiers.
+# Use: Render dashboard → New → Blueprint → point at FORGESTUDIO-303/forge.
+# After deploy: copy the backend URL → set it as FORGE_API_URL (see README).
+services:
+  - type: web
+    name: forge-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        fromDatabase:
+          name: forge-db
+          property: connectionString
+
+databases:
+  - name: forge-db
+    plan: free
