@@ -159,7 +159,7 @@ body{
 <div id="bars"><div class="b t"></div><div class="b bt"></div></div>
 <div id="wm">◈ FORGESTUDIO-303</div>
 <div id="hud"><div id="prog"></div></div>
-<div id="ctrl"><button id="btnAudio" title="sound">♫ Sound: ON</button><button id="btnReplay">↻ Replay</button></div>
+<div id="ctrl"><button id="btnAudio" title="sound">♫ Sound: OFF</button><button id="btnReplay">↻ Replay</button></div>
 
 <script>
 (function () {
@@ -343,27 +343,43 @@ body{
     }, scenes[cur].dur * 1000);
   }
 
-  /* ambient audio */
-  var audio = { on: true, ctx: null, nodes: [], start: function () {
+  /* ambient sub-pad: slow breathing low hum, no siren */
+  var audio = { on: false, ctx: null, nodes: [], start: function () {
     if (!this.on || this.ctx) return;
     try {
       var c = new (window.AudioContext || window.webkitAudioContext)();
       this.ctx = c;
-      var g = c.createGain(); g.gain.value = .028; g.connect(c.destination);
-      var f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 480; f.connect(g);
-      var t = c.createOscillator(); t.type = 'sine'; t.frequency.value = 110; t.connect(f); t.start();
-      var t2 = c.createOscillator(); t2.type = 'sine'; t2.frequency.value = 165; t2.connect(f); t2.start();
-      var lfo = c.createOscillator(); lfo.frequency.value = .12; var lg = c.createGain(); lg.gain.value = 220;
-      lfo.connect(lg); lg.connect(t2.frequency); lfo.start();
-      this.nodes = [t, t2, lfo];
+      var out = c.createGain(); out.gain.value = 0.0; out.connect(c.destination);
+      var f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 190; f.Q.value = 0.6; f.connect(out);
+      [55, 82.5, 110].forEach(function (hz, i) {
+        var o = c.createOscillator();
+        o.type = i === 2 ? 'triangle' : 'sine';
+        o.frequency.value = hz;
+        o.detune.value = -4 + i * 3;
+        o.connect(f); o.start();
+        audio.nodes.push(o);
+      });
+      /* slow volume shimmer (0.07Hz) on the master, not on pitch */
+      var lfo = c.createOscillator(); lfo.frequency.value = 0.07; lfo.start();
+      var lg = c.createGain(); lg.gain.value = 0.014; lfo.connect(lg);
+      lg.connect(out.gain); audio.nodes.push(lfo, lg);
+      /* fade in over 2s (browsers need a resume kick on click anyway) */
+      var t0 = c.currentTime;
+      out.gain.setValueAtTime(0.0, t0);
+      out.gain.linearRampToValueAtTime(0.045, t0 + 2);
+      audio.masterGain = out.gain; audio.fade = null;
       btnAudio.textContent = '♫ Sound: ON';
-    } catch (_) { this.on = false; btnAudio.textContent = '♫ Sound: OFF'; }
+      carryClicks();
+    } catch (_) { audio.on = false; btnAudio.textContent = '♫ Sound: OFF'; }
   }, stop: function () {
     if (!this.ctx) return;
-    this.nodes.forEach(function (n) { try { n.stop(); } catch (_) {}; });
+    try { this.nodes.forEach(function (n) { try { n.stop(); } catch (_) {}; }); } catch (_) {}
     this.ctx.close(); this.ctx = null;
-    this.stopAll();
-  }, stopAll: function () {} };
+  } };
+  function carryClicks() {
+    if (audio.on && audio.ctx && audio.ctx.state === 'suspended') audio.ctx.resume();
+  }
+  document.addEventListener('click', carryClicks);
 
   btnAudio.addEventListener('click', function () {
     audio.on = !audio.on;
