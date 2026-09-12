@@ -21,6 +21,13 @@ class SystemStore extends ChangeNotifier {
   double brightness = 0.8;
   String schemeNote = '';
   bool loaded = false;
+
+  // Expose sensor data from sample.
+  double get cpuTemp => sample?.cpuTemp ?? 0;
+  double get gpuUsage => sample?.gpuUsage ?? 0;
+  double get gpuTemp => sample?.gpuTemp ?? 0;
+  double get fanRpm => sample?.fanRpm ?? 0;
+  String get gpuName => sample?.gpuName ?? '';
   Timer? _timer;
 
   ForgeProfile get current => ForgeProfile(

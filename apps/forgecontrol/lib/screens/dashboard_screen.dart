@@ -179,7 +179,11 @@ class _DashboardScreenState extends State<DashboardScreen>
     final smp = s.sample;
     final cpu = smp?.cpu ?? 0.0;
     final ram = (smp?.ramPct ?? 0).clamp(0.0, 100.0);
-    final load = (cpu + ram) / 2;
+    final gpu = s.gpuUsage;
+    final cpuT = s.cpuTemp;
+    final gpuT = s.gpuTemp;
+    final fan = s.fanRpm;
+    final load = (cpu + ram + gpu) / 3;
     return ListView(padding: const EdgeInsets.all(20), children: [
       // hero banner, Armoury style.
       Container(
@@ -232,11 +236,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      const _Chip(
+                      _Chip(
                           icon: Icons.check_circle_rounded,
-                          label: 'SENSORS ONLINE',
+                          label: s.gpuName.isNotEmpty ? s.gpuName.toUpperCase() : 'SENSORS ONLINE',
                           color: ForgeColors.gr,
-                          bg: Color(0x1F34D399)),
+                          bg: const Color(0x1F34D399)),
                       const SizedBox(width: 8),
                       _Chip(
                           icon: null,
@@ -273,6 +277,8 @@ class _DashboardScreenState extends State<DashboardScreen>
                       const SizedBox(width: 8),
                       Expanded(child: _Gauge(label: 'MEMORY', value: ram, color: ForgeColors.vi)),
                       const SizedBox(width: 8),
+                      Expanded(child: _Gauge(label: 'GPU', value: gpu, color: ForgeColors.mg)),
+                      const SizedBox(width: 8),
                       Expanded(child: _Gauge(label: 'LOAD', value: load, color: ForgeColors.gold)),
                     ],
                   ),
@@ -301,7 +307,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                       const _SecTitle('LIVE STATUS'),
                       const SizedBox(height: 8),
                       _statusRow('CPU load', '${cpu.toStringAsFixed(0)} %', ForgeColors.cy),
+                      _statusRow('CPU temp', cpuT > 0 ? '${cpuT.toStringAsFixed(0)} °C' : 'N/A', ForgeColors.gr),
                       _statusRow('Memory', '${smp?.ramUsedGB.toStringAsFixed(1)} / ${smp?.ramTotalGB.toStringAsFixed(1)} GB', ForgeColors.vi),
+                      _statusRow('GPU', gpu > 0 ? '${gpu.toStringAsFixed(0)} %' : 'N/A', ForgeColors.mg),
+                      _statusRow('GPU temp', gpuT > 0 ? '${gpuT.toStringAsFixed(0)} °C' : 'N/A', ForgeColors.mg),
+                      _statusRow('Fan', fan > 0 ? '${fan.toStringAsFixed(0)} RPM' : 'N/A', ForgeColors.cy),
                       _statusRow('Uptime', '${smp?.uptimeMin ?? 0} min', ForgeColors.gold),
                       _statusRow('Power plan', s.schemeNote.isEmpty ? 'active' : s.schemeNote, ForgeColors.gr,
                           mono: true),

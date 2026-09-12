@@ -5,7 +5,7 @@ import 'package:win32/win32.dart';
 import 'monitor_stub.dart' show SysSample;
 export 'monitor_stub.dart' show SysSample;
 
-/// Real Windows telemetry via Win32 FFI. CPU% from GetSystemTimes delta.
+/// Real Windows telemetry via Win32 FFI + WMI + nvidia-smi.
 class _CpuMeter {
   int _prevIdle = 0, _prevKernel = 0, _prevUser = 0;
   bool _first = true;
@@ -44,6 +44,7 @@ class _CpuMeter {
 class SystemMonitor {
   static final _cpu = _CpuMeter();
   static final _started = DateTime.now();
+  static String? _gpuNameCache;
 
   static Future<SysSample> read(SysSample? prev) async {
     final cpu = _cpu.sample();
@@ -58,12 +59,82 @@ class SystemMonitor {
     } finally {
       calloc.free(mem);
     }
+
+    // Parallel hardware reads (fire-and-forget, best effort).
+    final gpuFuture = _readGpu();
+    final cpuTempFuture = _readCpuTemp();
+    final fanFuture = _readFanRpm();
+
+    final gpuData = await gpuFuture;
+    final cpuTemp = await cpuTempFuture;
+    final fanRpm = await fanFuture;
+
     return SysSample(
       cpu: cpu,
       ramUsedGB: (total - avail).clamp(0, total).toDouble(),
       ramTotalGB: total.toDouble(),
       uptimeMin: DateTime.now().difference(_started).inMinutes,
+      cpuTemp: cpuTemp,
+      gpuUsage: gpuData.usage,
+      gpuTemp: gpuData.temp,
+      fanRpm: fanRpm,
+      gpuName: _gpuNameCache ?? '',
     );
+  }
+
+  /// Read GPU via nvidia-smi (NVIDIA only, best effort).
+  static Future<({double usage, double temp})> _readGpu() async {
+    try {
+      final r = await Process.run('nvidia-smi', [
+        '--query-gpu=utilization.gpu,temperature.gpu,name',
+        '--format=csv,noheader,nounits',
+      ]);
+      if (r.exitCode != 0) return (usage: 0.0, temp: 0.0);
+      final line = (r.stdout as String).trim();
+      if (line.isEmpty) return (usage: 0.0, temp: 0.0);
+      final parts = line.split(',').map((s) => s.trim()).toList();
+      if (parts.length < 3) return (usage: 0.0, temp: 0.0);
+      _gpuNameCache ??= parts[2];
+      final usage = double.tryParse(parts[0]) ?? 0.0;
+      final temp = double.tryParse(parts[1]) ?? 0.0;
+      return (usage: usage, temp: temp);
+    } catch (_) {
+      return (usage: 0.0, temp: 0.0);
+    }
+  }
+
+  /// Read CPU temp via WMI MSAcpi_ThermalZoneTemperature (tenths of Kelvin).
+  static Future<double> _readCpuTemp() async {
+    try {
+      final r = await Process.run('powershell', [
+        '-NoProfile', '-Command',
+        '(Get-CimInstance MSAcpi_ThermalZoneTemperature -Namespace root/wmi '
+        '| Select-Object -First 1).CurrentTemperature',
+      ]);
+      if (r.exitCode != 0) return 0;
+      final raw = (r.stdout as String).trim();
+      final kelvinTenths = int.tryParse(raw);
+      if (kelvinTenths == null || kelvinTenths == 0) return 0;
+      return ((kelvinTenths / 10) - 273.15).clamp(0, 150).toDouble();
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  /// Read CPU fan RPM via WMI (Win32_Fan or MSAcpi).
+  static Future<double> _readFanRpm() async {
+    try {
+      final r = await Process.run('powershell', [
+        '-NoProfile', '-Command',
+        '(Get-CimInstance Win32_Fan -ErrorAction SilentlyContinue '
+        '| Select-Object -First 1).DesiredSpeed',
+      ]);
+      if (r.exitCode != 0) return 0;
+      final raw = (r.stdout as String).trim();
+      return (double.tryParse(raw) ?? 0).clamp(0, 10000);
+    } catch (_) {
+      return 0;
+    }
   }
 
   static const _schemes = {
@@ -72,7 +143,6 @@ class SystemMonitor {
     'performance': 'SCHEME_MAX',
   };
 
-  /// Switches the real Windows power plan. Returns status message.
   static Future<String> applyPowerMode(String mode) async {
     final alias = _schemes[mode] ?? 'SCHEME_BALANCED';
     try {
