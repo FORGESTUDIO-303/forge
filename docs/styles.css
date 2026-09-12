@@ -132,3 +132,36 @@ html.gate-lock main,html.gate-lock footer,html.gate-lock header{display:none}
 .modal input:focus{border-color:var(--cy)}
 @media(max-width:900px){.hero{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.grid.mini{grid-template-columns:1fr 1fr}.dl{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.nav-in{flex-wrap:wrap;gap:10px}.links{display:flex;gap:14px;order:3;width:100%;overflow-x:auto}.links a{white-space:nowrap}#search{min-width:120px;flex:1}}
 @media(max-width:560px){.grid,.grid.mini{grid-template-columns:1fr}}
+/* ============ Identity v2 — gold diamond era ============ */
+::selection{background:rgba(232,193,90,.28);color:#fff}
+.brand img{filter:drop-shadow(0 0 6px rgba(232,193,90,.45));border-radius:8px;transition:filter .2s ease,transform .2s ease}
+.brand:hover img{filter:drop-shadow(0 0 14px rgba(232,193,90,.9));transform:scale(1.06)}
+.nav{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d1428,#0a0e17)}
+.hero{position:relative}
+.hero::before{content:"";position:absolute;inset:-120px -160px;z-index:-1;pointer-events:none;
+  background:radial-gradient(600px 340px at 78% 22%,rgba(232,193,90,.08),transparent 60%)}
+.kicker.gold{letter-spacing:3px}
+.hero-card .win{box-shadow:0 30px 80px rgba(34,211,238,.12),0 0 90px -34px rgba(232,193,90,.4)}
+.g{border-color:var(--gold);transition:border-color .18s ease}
+.win-foot span::before{content:"◇ ";color:var(--gold);font-size:10px}
+.stats b{font-size:26px;background:linear-gradient(120deg,#ffe9a8 10%,var(--gold) 55%,var(--gold2) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stats div:hover,.m:hover{border-color:var(--gold);transform:translateY(-2px)}
+.stats div,.m{transition:transform .18s ease,border-color .18s ease}
+.card-art{filter:drop-shadow(0 4px 10px rgba(0,0,0,.4));transition:transform .2s ease,filter .2s ease}
+.card:hover .card-art{transform:scale(1.08) rotate(-2deg);filter:drop-shadow(0 6px 14px rgba(232,193,90,.35))}
+.card:hover{border-color:var(--gold);box-shadow:0 20px 50px -20px rgba(232,193,90,.4)}
+.card .tag{color:var(--gold);letter-spacing:2.5px}
+.card h3{background:linear-gradient(120deg,#fff 40%,var(--cy) 120%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sec-head h2{letter-spacing:-.5px}
+.sec-head h2::after{content:" ◈";color:var(--gold);font-size:14px;vertical-align:middle}
+.btn.gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1206;border:0;font-weight:800}
+.btn.gold:hover{box-shadow:0 12px 30px -10px rgba(232,193,90,.7)}
+.btn.primary:hover{box-shadow:0 12px 30px -10px rgba(34,211,238,.65)}
+.chip.on{background:linear-gradient(135deg,var(--gold),var(--gold2));border-color:var(--gold)}
+.dl{box-shadow:0 30px 90px -40px rgba(232,193,90,.25)}
+.sys li::before{color:var(--gold)}
+.foot span:first-child::before{content:"◈ ";color:var(--gold)}
+.foot a:hover{text-shadow:0 0 10px rgba(34,211,238,.6)}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--gold)}

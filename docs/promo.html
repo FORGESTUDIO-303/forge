@@ -150,6 +150,14 @@ body{
 #ctrl button{background:rgba(19,27,48,.7);border:1px solid var(--line);color:var(--txt);
   border-radius:99px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit}
 #ctrl button:hover{border-color:var(--cy)}
+.visit{
+  margin-top:26px;display:inline-block;
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1206;
+  font-weight:800;font-size:15px;letter-spacing:2px;text-decoration:none;
+  border-radius:12px;padding:14px 30px;box-shadow:0 14px 40px -12px rgba(232,193,90,.55);
+}
+.visit:hover{box-shadow:0 18px 50px -12px rgba(232,193,90,.8);transform:translateY(-1px)}
+#wm{filter:drop-shadow(0 0 8px rgba(232,193,90,.4))}
 </style>
 </head>
 <body>
@@ -220,7 +228,7 @@ body{
         '<div class="stat" style="flex:1"><div class="gaugeWrap"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" stroke="#1e2a47" stroke-width="5" fill="none"/><circle cx="20" cy="20" r="17" stroke="#f472b6" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="64 106.8" style="transition:stroke-dasharray 1.6s ease"/></svg></div><b style="color:var(--mg)">61%</b><span>RAM</span></div></div>' +
         '<div class="spark"><svg viewBox="0 0 280 70" preserveAspectRatio="none"><path d="M0 55 C30 40 45 65 70 48 C95 30 120 55 145 40 C170 24 195 58 222 34 C245 15 262 40 280 28" stroke="url(#sg)" stroke-width="3" fill="none" style="filter:drop-shadow(0 0 6px rgba(34,211,238,.8))"/><defs><linearGradient id="sg" x1="0" y1="0" x2="280" y2="0"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs></svg></div>' +
         '<div class="prow"><span>Fans 40°C</span><div class="meter" style="flex:1;margin:2px 0 0 12px"><div style="width:35%;animation-delay:.4s"></div></div></div>' +
-        '<div class="prow" style="align-items:center"><span>RGB wave</span><span class="stars">◈ ◈ ◈ ◈ ◈</span><span style="font-size:11px;color:var(--mut)">Balanced plan</span></div>' }) +
+        '<div class="prow" style="align-items:center"><span>RGB wave</span><span class="stars">◈ ◈ ◈ ◈ ◈</span><span style="font-size:11px;color:var(--gold)">Free forever</span></div>' }) +
       '</div>';
   }});
 
@@ -279,7 +287,8 @@ body{
       diamondGlyph(true) +
       '<h1 class="title gold a2">FORGESTUDIO<span style="font-size:.55em;vertical-align:middle">·303</span></h1>' +
       '<p class="sub a3">Six tools. Every platform. Free forever.</p>' +
-      '<p class="kicker a4">Open source • MIT • Built by Souhail</p>' +
+      '<p class="kicker a4">Built by Souhail with Muse Spark</p>' +
+      '<a class="visit a4" href="index.html">◈ Visit the site</a>' +
       '</div>';
   }});
 
