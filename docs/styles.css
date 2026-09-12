@@ -70,6 +70,36 @@ footer{border-top:1px solid var(--line);margin-top:20px}
 .box-x:hover{color:var(--txt)}
 :focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Luxury tier */
+:root{--gold:#e8c15a;--gold2:#b98a2e}
+.kicker.gold,.tag.gold{color:var(--gold)}
+.hero h1{background:linear-gradient(120deg,#fff 30%,var(--cy) 65%,var(--mg) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.grid.pricing{grid-template-columns:repeat(3,1fr)}
+.card.plan{position:relative;overflow:hidden}
+.card.plan.hot{border-color:var(--gold);box-shadow:0 0 40px -12px rgba(232,193,90,.45)}
+.card.plan.hot::before{content:"MOST POPULAR";position:absolute;top:12px;right:-34px;transform:rotate(35deg);background:linear-gradient(135deg,var(--gold),var(--gold2));color:#1a1206;font-size:10px;font-weight:800;letter-spacing:1px;padding:4px 40px}
+.price{font-size:34px;font-weight:800}
+.price span{font-size:14px;color:var(--mut);font-weight:400}
+.feats{list-style:none;display:grid;gap:8px;margin:6px 0 14px;color:var(--mut);font-size:14px}
+.feats li::before{content:"◆ ";color:var(--gold);font-size:11px}
+.btn.block{width:100%;text-align:center}
+.auth-page{display:flex;justify-content:center;padding:48px 20px}
+.auth-card{width:min(460px,100%);background:linear-gradient(180deg,var(--card),#0d1428);border:1px solid var(--line);border-radius:20px;padding:32px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.auth-card h1{font-size:32px;margin-bottom:6px}
+.auth-card .tabs{display:flex;gap:8px;margin:16px 0}
+.auth-card form{display:grid;gap:12px}
+.auth-card label{display:grid;gap:6px;font-size:14px;color:var(--mut)}
+.auth-card input{background:#0b1120;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 12px;outline:none}
+.auth-card input:focus{border-color:var(--cy)}
+.fine{color:var(--mut);font-size:13px;margin-top:12px}
+.fine a,.foot a{color:var(--cy);text-decoration:none}
+.sso-div{display:flex;align-items:center;gap:10px;color:var(--mut);font-size:13px;margin:14px 0 10px}
+.sso-div::before,.sso-div::after{content:"";flex:1;height:1px;background:var(--line)}
+.sso-div span{white-space:nowrap}
+.sso-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sso{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#0b1120;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 6px;cursor:pointer;font-size:14px;font-weight:600}
+.sso:hover{border-color:var(--cy)}
+@media(max-width:900px){.grid.pricing{grid-template-columns:1fr}}
 .modal .tabs{display:flex;gap:8px;margin-bottom:16px}
 .modal form{display:grid;gap:12px}
 .modal label{display:grid;gap:6px;font-size:14px;color:var(--mut)}

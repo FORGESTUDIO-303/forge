@@ -59,4 +59,26 @@
       else { e.preventDefault(); tryDownload(b.dataset.dl); }
     });
   });
+
+  // Pricing: reflect live plans + start checkout (Stripe opens in November).
+  var planMsg = document.getElementById('planMsg');
+  function apiBase() {
+    return (window.FORGE_API_URL || 'http://localhost:3000/api');
+  }
+  document.querySelectorAll('[data-plan-btn]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var plan = b.dataset.planBtn;
+      var token = null;
+      try { token = localStorage.getItem('forge_token'); } catch (e) {}
+      if (plan === 'free' || !token) { window.location.href = 'login.html'; return; }
+      planMsg.textContent = 'Contacting checkout…';
+      fetch(apiBase() + '/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+        body: JSON.stringify({ plan: plan })
+      }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+        planMsg.textContent = x.ok ? 'Upgraded.' : ('⚠ ' + (x.j.error || 'Checkout unavailable'));
+      }).catch(function () { planMsg.textContent = '⚠ Cannot reach the account server.'; });
+    });
+  });
 })();

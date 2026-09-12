@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log in — FORGE</title>
+<meta name="description" content="Log in or create your FORGE account.">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<meta name="theme-color" content="#0a0e17">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="./"><img src="assets/logo.svg" alt="FORGE logo" width="30" height="30"> FORGE</a>
+    <nav class="links">
+      <a href="./#projects">Apps</a>
+      <a href="./#pricing">Pricing</a>
+      <a href="./#download">Download</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap auth-page">
+  <div class="auth-card">
+    <p class="kicker">ACCOUNT</p>
+    <h1>Welcome back</h1>
+    <p class="sub">One account for the suite, the downloads and your plan.</p>
+    <div class="tabs"><button class="chip on" id="tabLogin">Log in</button><button class="chip" id="tabRegister">Register</button></div>
+    <form id="authForm">
+      <div id="nameRow" style="display:none"><label>Name<input id="authName" maxlength="60" placeholder="Your name" autocomplete="name"></label></div>
+      <label>Email<input id="authEmail" type="email" required placeholder="you@mail.com" autocomplete="email"></label>
+      <label>Password<input id="authPass" type="password" required minlength="6" placeholder="6+ characters" autocomplete="current-password"></label>
+      <button class="btn primary block" id="authGo" type="submit">Log in</button>
+      <p class="msg" id="authMsg" role="status"></p>
+    </form>
+    <div class="sso-div"><span>or continue with</span></div>
+    <div class="sso-row">
+      <button type="button" class="sso" data-sso="google"><svg viewBox="0 0 24 24" width="18" height="18"><path fill="#4285F4" d="M23.5 12.3c0-.9-.1-1.5-.3-2.3H12v4.5h6.5c-.1 1.1-.8 2.7-2.4 3.8l-.1.1 3.5 2.7.2.1c2.2-2 3.6-5 3.6-8.9z"/><path fill="#34A853" d="M12 24c3.2 0 5.9-1.1 7.9-2.9l-3.8-2.9c-1 .7-2.4 1.2-4.1 1.2-3.1 0-5.8-2.1-6.8-5l-.1.1-3.6 2.8-.1.1C3.5 21.3 7.5 24 12 24z"/><path fill="#FBBC05" d="M5.2 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.7.4-2.4l-.1-.1-3.6-2.8-.1.1C.5 8.6 0 10.2 0 12s.5 3.4 1.4 4.9l3.8-2.5z"/><path fill="#EA4335" d="M12 4.7c1.8 0 3 .8 3.7 1.4l3.3-3.2C17.9 1.1 15.2 0 12 0 7.5 0 3.5 2.7 1.4 6.8l3.8 2.9c1-2.9 3.7-5 6.8-5z"/></svg>Google</button>
+      <button type="button" class="sso" data-sso="github"><svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56v-2.17c-3.2.7-3.87-1.36-3.87-1.36-.52-1.33-1.28-1.68-1.28-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.69 1.25 3.35.96.1-.75.4-1.25.72-1.54-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.05 0 0 .96-.31 3.15 1.18a10.9 10.9 0 0 1 5.74 0c2.19-1.49 3.15-1.18 3.15-1.18.62 1.59.23 2.76.11 3.05.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.35.77 1.05.77 2.12v3.15c0 .31.21.68.8.56A10.52 10.52 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg>GitHub</button>
+    </div>
+    <p class="fine">SSO activates once OAuth apps are registered — email works now.</p>
+    <p class="fine"><a href="./">← Back to site</a></p>
+  </div>
+</main>
+<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span></div></footer>
+<script>
+(function () {
+  var API = window.FORGE_API_URL || 'http://localhost:3000/api';
+  var key = 'forge_token';
+  var msg = document.getElementById('authMsg');
+  var tabL = document.getElementById('tabLogin');
+  var tabR = document.getElementById('tabRegister');
+  var nameRow = document.getElementById('nameRow');
+  var mode = 'login';
+  function setMode(m) {
+    mode = m; msg.textContent = '';
+    tabL.classList.toggle('on', m === 'login');
+    tabR.classList.toggle('on', m === 'register');
+    nameRow.style.display = m === 'register' ? '' : 'none';
+    document.getElementById('authGo').textContent = m === 'register' ? 'Create account' : 'Log in';
+  }
+  tabL.onclick = function () { setMode('login'); };
+  tabR.onclick = function () { setMode('register'); };
+  document.getElementById('authForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var name = document.getElementById('authName').value.trim();
+    var email = document.getElementById('authEmail').value.trim();
+    var pass = document.getElementById('authPass').value;
+    msg.textContent = '…';
+    fetch(API + (mode === 'register' ? '/register' : '/login'), {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(mode === 'register' ? { name: name, email: email, password: pass } : { email: email, password: pass })
+    }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
+      if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed'); return; }
+      localStorage.setItem(key, x.j.token);
+      window.location.href = './';
+    }).catch(function () { msg.textContent = '⚠ Cannot reach the account server.'; });
+  });
+  document.querySelectorAll('[data-sso]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      window.location.href = API + '/auth/' + b.dataset.sso;
+    });
+  });
+  // OAuth landing: /login.html?token=... or ?error=...
+  var q = new URLSearchParams(window.location.search);
+  if (q.get('token')) {
+    localStorage.setItem(key, q.get('token'));
+    window.location.replace('./');
+  } else if (q.get('error')) {
+    msg.textContent = '⚠ ' + q.get('error');
+  }
+})();
+</script>
+</body>
+</html>

@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FORGE — Game Library, Hardware Control & Studio Apps</title>
 <meta name="description" content="OmniLauncher, Forge Control, Pulse Link, Boost Engine, Lumina Studio, StreamForge. Premium offline-first apps for PC, phone and web.">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<meta name="theme-color" content="#0a0e17">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -15,6 +17,7 @@
       <a href="#projects">Apps</a>
       <a href="#games">Games</a>
       <a href="#suite">Suite</a>
+      <a href="#pricing">Pricing</a>
       <a href="#download">Download</a>
     </nav>
     <div class="nav-cta">
@@ -130,6 +133,49 @@
   </div>
 </section>
 
+<section id="pricing" class="wrap">
+  <div class="sec-head"><div><p class="kicker gold">SUBSCRIPTION</p><h2>One account, three tiers</h2></div></div>
+  <p class="sub">Free forever for the essentials. Pro and Unlimited unlock the full studio. Prices in USD/month, cancel anytime.</p>
+  <div class="grid pricing" id="planGrid">
+    <article class="card plan" data-plan="free">
+      <div class="tag">FREE</div><h3>Free</h3>
+      <p class="price">$0<span>/mo</span></p>
+      <ul class="feats">
+        <li>Full library + 50 games</li>
+        <li>Community profiles</li>
+        <li>Web apps</li>
+        <li>Offline-first core</li>
+      </ul>
+      <button class="btn ghost block" data-plan-btn="free">Current plan</button>
+    </article>
+    <article class="card plan hot" data-plan="pro">
+      <div class="tag gold">★ PRO</div><h3>Pro</h3>
+      <p class="price">$6<span>/mo</span></p>
+      <ul class="feats">
+        <li>Unlimited games</li>
+        <li>Real hardware control</li>
+        <li>RGB + macro studio</li>
+        <li>Priority builds</li>
+        <li>Cloud save sync</li>
+      </ul>
+      <button class="btn primary block" data-plan-btn="pro">Go Pro</button>
+    </article>
+    <article class="card plan" data-plan="unlimited">
+      <div class="tag gold">UNLIMITED</div><h3>Unlimited</h3>
+      <p class="price">$12<span>/mo</span></p>
+      <ul class="feats">
+        <li>Everything in Pro</li>
+        <li>All future apps day one</li>
+        <li>Vote on roadmap</li>
+        <li>Name in credits</li>
+        <li>Direct support</li>
+      </ul>
+      <button class="btn block" data-plan-btn="unlimited">Go Unlimited</button>
+    </article>
+  </div>
+  <p id="planMsg" class="msg" role="status"></p>
+</section>
+
 <section id="download" class="wrap dl">
   <div>
     <p class="kicker">DOWNLOAD</p>
@@ -155,7 +201,7 @@
 </section>
 </main>
 
-<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span id="yr"></span></div></footer>
+<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span><a href="login.html">Log in</a> · <a href="#pricing">Pricing</a> · <span id="yr"></span></span></div></footer>
 <div class="modal" id="authModal" aria-hidden="true">
   <div class="box" role="dialog" aria-modal="true" aria-label="Login or register">
     <button class="box-x" id="authClose" aria-label="Close login dialog">✕</button>

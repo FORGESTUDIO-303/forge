@@ -25,6 +25,8 @@ function auth(req, res, next) {
   catch { return res.status(401).json({ error: 'Session expired, log in again' }); }
 }
 
+require('./oauth').setupOAuth(app, sign);
+
 app.post('/api/register', async (req, res) => {
   try {
   const { name, email, password } = req.body || {};
@@ -41,7 +43,7 @@ app.post('/api/login', async (req, res) => {
   try {
   const { email, password } = req.body || {};
   const user = email && await db.findByEmail(email);
-  if (!user || !(await bcrypt.compare(String(password || ''), user.passHash)))
+  if (!user || !user.passHash || !(await bcrypt.compare(String(password || ''), user.passHash)))
     return res.status(401).json({ error: 'Wrong email or password' });
   res.json({ token: sign(user), user: db.publicUser(user) });
   } catch (e) { console.error('login:', e.message); return res.status(500).json({ error: 'Database unavailable, try again in a minute.' }); }
@@ -53,6 +55,26 @@ app.get('/api/me', auth, async (req, res) => {
   if (!user) return res.status(404).json({ error: 'User not found' });
   res.json({ user: db.publicUser(user) });
   } catch (e) { console.error('me:', e.message); return res.status(500).json({ error: 'Database unavailable, try again in a minute.' }); }
+});
+
+const PLANS = [
+  { id: 'free', name: 'Free', price: 0, cta: 'Current plan',
+    features: ['Full library + 50 games', 'Community profiles', 'Web apps', 'Offline-first core'] },
+  { id: 'pro', name: 'Pro', price: 6, cta: 'Go Pro',
+    features: ['Unlimited games', 'Real hardware control (Forge)', 'RGB + macro studio', 'Priority builds', 'Cloud save sync'] },
+  { id: 'unlimited', name: 'Unlimited', price: 12, cta: 'Go Unlimited',
+    features: ['Everything in Pro', 'All future apps day one', 'Vote on roadmap', 'Name in credits', 'Direct support'] },
+];
+app.get('/api/plans', (req, res) => res.json({ plans: PLANS }));
+
+// Paid checkout opens with Stripe in November (needs STRIPE_SECRET_KEY + webhook).
+app.post('/api/checkout', auth, async (req, res) => {
+  const { plan } = req.body || {};
+  if (!['pro', 'unlimited'].includes(plan))
+    return res.status(400).json({ error: 'Choose pro or unlimited' });
+  if (!process.env.STRIPE_SECRET_KEY)
+    return res.status(501).json({ error: 'Checkout opens with Stripe in November — your account stays Free until then.' });
+  return res.status(501).json({ error: 'Stripe flow lands in November.' });
 });
 
 app.get('/api/health', (req, res) => res.json({ ok: true, time: new Date().toISOString() }));
