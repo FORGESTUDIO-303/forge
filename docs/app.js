@@ -60,25 +60,34 @@
     });
   });
 
-  // Pricing: reflect live plans + start checkout (Stripe opens in November).
-  var planMsg = document.getElementById('planMsg');
-  function apiBase() {
-    return (window.FORGE_API_URL || 'http://localhost:3000/api');
-  }
-  document.querySelectorAll('[data-plan-btn]').forEach(function (b) {
-    b.addEventListener('click', function () {
-      var plan = b.dataset.planBtn;
-      var token = null;
-      try { token = localStorage.getItem('forge_token'); } catch (e) {}
-      if (plan === 'free' || !token) { window.location.href = 'login.html'; return; }
-      planMsg.textContent = 'Contacting checkout…';
-      fetch(apiBase() + '/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-        body: JSON.stringify({ plan: plan })
+  // Contact bot: stores the message, shows ForgeBot's instant reply.
+  function apiBase() { return (window.FORGE_API_URL || 'http://localhost:3000/api'); }
+  var contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var st = document.getElementById('cStatus');
+      st.textContent = 'Sending…';
+      fetch(apiBase() + '/contact', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('cName').value,
+          email: document.getElementById('cEmail').value,
+          message: document.getElementById('cMsg').value
+        })
       }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
-        planMsg.textContent = x.ok ? 'Upgraded.' : ('⚠ ' + (x.j.error || 'Checkout unavailable'));
-      }).catch(function () { planMsg.textContent = '⚠ Cannot reach the account server.'; });
+        st.textContent = x.ok ? ('🤖 ' + x.j.reply) : ('⚠ ' + (x.j.error || 'Failed'));
+        if (x.ok) contactForm.reset();
+      }).catch(function () { st.textContent = '⚠ Cannot reach the account server.'; });
     });
-  });
+  }
+  // Reveal-on-scroll for sections and cards.
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('reveal'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('section, .card, .m').forEach(function (el) { io.observe(el); });
+  }
 })();

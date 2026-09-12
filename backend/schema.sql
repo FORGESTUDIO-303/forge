@@ -21,3 +21,10 @@ BEGIN
     ALTER TABLE users ADD CONSTRAINT users_plan_check CHECK (plan IN ('free','pro','unlimited'));
   END IF;
 END $$;
+CREATE TABLE IF NOT EXISTS messages (
+  id TEXT PRIMARY KEY,
+  name VARCHAR(60) NOT NULL,
+  email TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT now()
+);

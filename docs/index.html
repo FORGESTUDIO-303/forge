@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <meta name="theme-color" content="#0a0e17">
 <link rel="stylesheet" href="styles.css">
+<script src="gate.js"></script>
 </head>
 <body>
 <header class="nav">
@@ -17,7 +18,6 @@
       <a href="#projects">Apps</a>
       <a href="#games">Games</a>
       <a href="#suite">Suite</a>
-      <a href="#pricing">Pricing</a>
       <a href="#download">Download</a>
     </nav>
     <div class="nav-cta">
@@ -133,47 +133,13 @@
   </div>
 </section>
 
-<section id="pricing" class="wrap">
-  <div class="sec-head"><div><p class="kicker gold">SUBSCRIPTION</p><h2>One account, three tiers</h2></div></div>
-  <p class="sub">Free forever for the essentials. Pro and Unlimited unlock the full studio. Prices in USD/month, cancel anytime.</p>
-  <div class="grid pricing" id="planGrid">
-    <article class="card plan" data-plan="free">
-      <div class="tag">FREE</div><h3>Free</h3>
-      <p class="price">$0<span>/mo</span></p>
-      <ul class="feats">
-        <li>Full library + 50 games</li>
-        <li>Community profiles</li>
-        <li>Web apps</li>
-        <li>Offline-first core</li>
-      </ul>
-      <button class="btn ghost block" data-plan-btn="free">Current plan</button>
-    </article>
-    <article class="card plan hot" data-plan="pro">
-      <div class="tag gold">★ PRO</div><h3>Pro</h3>
-      <p class="price">$6<span>/mo</span></p>
-      <ul class="feats">
-        <li>Unlimited games</li>
-        <li>Real hardware control</li>
-        <li>RGB + macro studio</li>
-        <li>Priority builds</li>
-        <li>Cloud save sync</li>
-      </ul>
-      <button class="btn primary block" data-plan-btn="pro">Go Pro</button>
-    </article>
-    <article class="card plan" data-plan="unlimited">
-      <div class="tag gold">UNLIMITED</div><h3>Unlimited</h3>
-      <p class="price">$12<span>/mo</span></p>
-      <ul class="feats">
-        <li>Everything in Pro</li>
-        <li>All future apps day one</li>
-        <li>Vote on roadmap</li>
-        <li>Name in credits</li>
-        <li>Direct support</li>
-      </ul>
-      <button class="btn block" data-plan-btn="unlimited">Go Unlimited</button>
-    </article>
+<section id="free" class="wrap">
+  <div class="sec-head"><div><p class="kicker gold">FREE &amp; OPEN SOURCE</p><h2>Everything free, forever</h2></div></div>
+  <p class="sub">No tiers, no paywalls, no credit card — every app, every feature, for everyone. This studio is built in the open.</p>
+  <div class="row">
+    <a class="btn primary" href="login.html">Create free account</a>
+    <a class="btn ghost" href="#download">Download the apps</a>
   </div>
-  <p id="planMsg" class="msg" role="status"></p>
 </section>
 
 <section id="download" class="wrap dl">
@@ -199,9 +165,22 @@
     </ul>
   </div>
 </section>
+
+<section id="contact" class="wrap">
+  <div class="sec-head"><div><p class="kicker">CONTACT</p><h2>Talk to a human (or bot)</h2></div></div>
+  <div class="auth-card" style="width:min(560px,100%)">
+    <form id="contactForm">
+      <label>Name<input id="cName" maxlength="60" placeholder="Your name"></label>
+      <label>Email<input id="cEmail" type="email" placeholder="you@mail.com"></label>
+      <label>Message<input id="cMsg" maxlength="2000" placeholder="What's up?"></label>
+      <button class="btn primary block" type="submit">Send</button>
+      <p class="msg" id="cStatus" role="status"></p>
+    </form>
+  </div>
+</section>
 </main>
 
-<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span><a href="login.html">Log in</a> · <a href="#pricing">Pricing</a> · <span id="yr"></span></span></div></footer>
+<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span><a href="login.html">Log in</a> · <a href="#free">Free forever</a> · Built by Souhail with Muse Spark · <span id="yr"></span></span></div></footer>
 <div class="modal" id="authModal" aria-hidden="true">
   <div class="box" role="dialog" aria-modal="true" aria-label="Login or register">
     <button class="box-x" id="authClose" aria-label="Close login dialog">✕</button>
@@ -210,6 +189,7 @@
       <div id="nameRow" style="display:none"><label>Name<input id="authName" maxlength="60" placeholder="Your name"></label></div>
       <label>Email<input id="authEmail" type="email" required placeholder="you@mail.com"></label>
       <label>Password<input id="authPass" type="password" required minlength="6" placeholder="6+ characters"></label>
+      <div id="humanRow" style="display:none"><label>Human check: <b id="humanQ">…</b> = <input id="humanA" inputmode="numeric" placeholder="?" style="width:70px"></label></div>
       <button class="btn primary" id="authGo" type="submit">Log in</button>
       <p class="msg" id="authMsg" role="status"></p>
     </form>

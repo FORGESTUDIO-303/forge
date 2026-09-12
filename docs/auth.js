@@ -12,13 +12,20 @@
   var tabR = document.getElementById('tabRegister');
   var nameRow = document.getElementById('nameRow');
   var mode = 'login';
+  var chal = null;
+  function loadChallenge() {
+    fetch(API + '/challenge').then(function (r) { return r.json(); }).then(function (j) {
+      chal = j;
+      document.getElementById('humanQ').textContent = j.a + ' + ' + j.b;
+    }).catch(function () { chal = null; });
+  }
 
   function token() { return localStorage.getItem(key); }
   function setToken(t) { t ? localStorage.setItem(key, t) : localStorage.removeItem(key); }
   function show(u) {
     loginBtn.style.display = 'none';
     userChip.style.display = '';
-    userChip.innerHTML = '👤 ' + escapeHtml(u.name || u.email) + ' <button id="logoutBtn" title="Log out">✕</button>';
+    userChip.innerHTML = '<a href="profile.html">👤 ' + escapeHtml(u.name || u.email) + '</a> <button id="logoutBtn" title="Log out">✕</button>';
     document.getElementById('logoutBtn').onclick = function () { setToken(null); hide(); };
   }
   function hide() { loginBtn.style.display = ''; userChip.style.display = 'none'; userChip.innerHTML = ''; }
@@ -28,6 +35,8 @@
     tabL.classList.toggle('on', m === 'login');
     tabR.classList.toggle('on', m === 'register');
     nameRow.style.display = m === 'register' ? '' : 'none';
+    document.getElementById('humanRow').style.display = m === 'register' ? '' : 'none';
+    if (m === 'register') loadChallenge();
     document.getElementById('authGo').textContent = m === 'register' ? 'Create account' : 'Log in';
   }
   function open() { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); setMode(token() ? 'login' : mode); document.getElementById('authEmail').focus(); }
@@ -45,11 +54,16 @@
     var email = document.getElementById('authEmail').value.trim();
     var pass = document.getElementById('authPass').value;
     msg.textContent = '…';
+    var body = mode === 'register'
+      ? { name: name, email: email, password: pass,
+          a: chal && chal.a, b: chal && chal.b, nonce: chal && chal.nonce,
+          sig: chal && chal.sig, answer: Number(document.getElementById('humanA').value) }
+      : { email: email, password: pass };
     fetch(API + (mode === 'register' ? '/register' : '/login'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mode === 'register' ? { name: name, email: email, password: pass } : { email: email, password: pass })
+      body: JSON.stringify(body)
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
-      if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed — is the backend running? (node A:\\backend\\server.js)'); return; }
+      if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed — is the backend running? (node A:\\backend\\server.js)'); if (mode === 'register') loadChallenge(); return; }
       setToken(x.j.token); show(x.j.user); close();
     }).catch(function () { msg.textContent = '⚠ Backend offline — start it: node A:\\backend\\server.js'; });
   });

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile — FORGE</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<meta name="theme-color" content="#0a0e17">
+<link rel="stylesheet" href="styles.css">
+<script src="gate.js"></script>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="./"><img src="assets/logo.svg" alt="FORGE logo" width="30" height="30"> FORGE</a>
+    <nav class="links">
+      <a href="./#projects">Apps</a>
+      <a href="./#download">Download</a>
+    </nav>
+    <div class="nav-cta"><button class="btn small" id="logoutBtn">Log out</button></div>
+  </div>
+</header>
+<main class="wrap auth-page">
+  <div class="auth-card">
+    <p class="kicker gold">ACCOUNT CONTROL</p>
+    <h1 id="helloTitle">Your profile</h1>
+    <p class="sub" id="welcomeBox" style="display:none"></p>
+    <div id="infoBox"><p class="sub">Loading…</p></div>
+    <div class="tabs"><span class="chip on">Rename</span></div>
+    <form id="nameForm">
+      <label>Display name<input id="newName" maxlength="60" autocomplete="nickname"></label>
+      <button class="btn primary block" type="submit">Save name</button>
+      <p class="msg" id="nameMsg" role="status"></p>
+    </form>
+    <div class="tabs"><span class="chip on">Password</span></div>
+    <form id="passForm">
+      <label>Current password<input id="curPass" type="password" autocomplete="current-password"></label>
+      <label>New password<input id="nextPass" type="password" minlength="6" autocomplete="new-password"></label>
+      <button class="btn primary block" type="submit">Change password</button>
+      <p class="msg" id="passMsg" role="status"></p>
+    </form>
+    <p class="fine"><a href="./">← Back to site</a></p>
+  </div>
+</main>
+<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio.</span><span>Built by Souhail with Muse Spark.</span></div></footer>
+<script>
+(function () {
+  var API = window.FORGE_API_URL || 'http://localhost:3000/api';
+  var key = 'forge_token';
+  var token = null;
+  try { token = localStorage.getItem(key); } catch (e) {}
+  if (!token) { window.location.href = 'login.html'; return; }
+  function auth() { return { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token }; }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  fetch(API + '/me', { headers: auth() }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || !j.user) { window.location.href = 'login.html'; return; }
+    var u = j.user;
+    document.getElementById('helloTitle').textContent = 'Hey, ' + (u.name || 'forger');
+    var ageDays = (Date.now() - new Date(u.createdAt).getTime()) / 864e5;
+    if (ageDays < 7) {
+      var w = document.getElementById('welcomeBox');
+      w.style.display = '';
+      w.textContent = '🎉 New here — welcome to FORGE, ' + (u.name || 'friend') + '! Your account was created ' + new Date(u.createdAt).toLocaleDateString() + '. Grab the apps below and have fun.';
+    }
+    document.getElementById('infoBox').innerHTML =
+      '<p class="sub">Email: <b>' + esc(u.email) + '</b><br>Sign-in: <b>' + esc(u.provider || 'email') + '</b><br>Plan: <b>Free forever</b><br>Member since: <b>' + esc(new Date(u.createdAt).toLocaleDateString()) + '</b></p>';
+    document.getElementById('newName').value = u.name || '';
+  }).catch(function () {
+    document.getElementById('infoBox').innerHTML = '<p class="msg">⚠ Cannot reach the account server.</p>';
+  });
+  document.getElementById('nameForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var m = document.getElementById('nameMsg');
+    m.textContent = '…';
+    fetch(API + '/me', { method: 'PATCH', headers: auth(), body: JSON.stringify({ name: document.getElementById('newName').value }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        m.textContent = x.ok ? '✓ Saved.' : ('⚠ ' + (x.j.error || 'Failed'));
+        if (x.ok) document.getElementById('helloTitle').textContent = 'Hey, ' + x.j.user.name;
+      }).catch(function () { m.textContent = '⚠ Cannot reach the account server.'; });
+  });
+  document.getElementById('passForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var m = document.getElementById('passMsg');
+    m.textContent = '…';
+    fetch(API + '/change-password', { method: 'POST', headers: auth(), body: JSON.stringify({ current: document.getElementById('curPass').value, next: document.getElementById('nextPass').value }) })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        m.textContent = x.ok ? '✓ Password changed.' : ('⚠ ' + (x.j.error || 'Failed'));
+        if (x.ok) { document.getElementById('curPass').value = ''; document.getElementById('nextPass').value = ''; }
+      }).catch(function () { m.textContent = '⚠ Cannot reach the account server.'; });
+  });
+  document.getElementById('logoutBtn').onclick = function () {
+    try { localStorage.removeItem(key); } catch (e) {}
+    window.location.href = './';
+  };
+})();
+</script>
+</body>
+</html>

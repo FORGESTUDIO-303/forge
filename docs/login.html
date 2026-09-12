@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
 <meta name="theme-color" content="#0a0e17">
 <link rel="stylesheet" href="styles.css">
+<script src="gate.js"></script>
 </head>
 <body>
 <header class="nav">
@@ -15,7 +16,7 @@
     <a class="brand" href="./"><img src="assets/logo.svg" alt="FORGE logo" width="30" height="30"> FORGE</a>
     <nav class="links">
       <a href="./#projects">Apps</a>
-      <a href="./#pricing">Pricing</a>
+      <a href="./#free">Free forever</a>
       <a href="./#download">Download</a>
     </nav>
   </div>
@@ -30,6 +31,7 @@
       <div id="nameRow" style="display:none"><label>Name<input id="authName" maxlength="60" placeholder="Your name" autocomplete="name"></label></div>
       <label>Email<input id="authEmail" type="email" required placeholder="you@mail.com" autocomplete="email"></label>
       <label>Password<input id="authPass" type="password" required minlength="6" placeholder="6+ characters" autocomplete="current-password"></label>
+      <div id="humanRow" style="display:none"><label>Human check: <b id="humanQ">…</b> = <input id="humanA" inputmode="numeric" placeholder="?" style="width:70px"></label></div>
       <button class="btn primary block" id="authGo" type="submit">Log in</button>
       <p class="msg" id="authMsg" role="status"></p>
     </form>
@@ -42,7 +44,7 @@
     <p class="fine"><a href="./">← Back to site</a></p>
   </div>
 </main>
-<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span></div></footer>
+<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span>Built by Souhail with Muse Spark.</span></div></footer>
 <script>
 (function () {
   var API = window.FORGE_API_URL || 'http://localhost:3000/api';
@@ -52,11 +54,20 @@
   var tabR = document.getElementById('tabRegister');
   var nameRow = document.getElementById('nameRow');
   var mode = 'login';
+  var chal = null;
+  function loadChallenge() {
+    fetch(API + '/challenge').then(function (r) { return r.json(); }).then(function (j) {
+      chal = j;
+      document.getElementById('humanQ').textContent = j.a + ' + ' + j.b;
+    }).catch(function () { chal = null; });
+  }
   function setMode(m) {
     mode = m; msg.textContent = '';
     tabL.classList.toggle('on', m === 'login');
     tabR.classList.toggle('on', m === 'register');
     nameRow.style.display = m === 'register' ? '' : 'none';
+    document.getElementById('humanRow').style.display = m === 'register' ? '' : 'none';
+    if (m === 'register') loadChallenge();
     document.getElementById('authGo').textContent = m === 'register' ? 'Create account' : 'Log in';
   }
   tabL.onclick = function () { setMode('login'); };
@@ -67,11 +78,16 @@
     var email = document.getElementById('authEmail').value.trim();
     var pass = document.getElementById('authPass').value;
     msg.textContent = '…';
+    var body = mode === 'register'
+      ? { name: name, email: email, password: pass,
+          a: chal && chal.a, b: chal && chal.b, nonce: chal && chal.nonce,
+          sig: chal && chal.sig, answer: Number(document.getElementById('humanA').value) }
+      : { email: email, password: pass };
     fetch(API + (mode === 'register' ? '/register' : '/login'), {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(mode === 'register' ? { name: name, email: email, password: pass } : { email: email, password: pass })
+      body: JSON.stringify(body)
     }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); }).then(function (x) {
-      if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed'); return; }
+      if (!x.ok) { msg.textContent = '⚠ ' + (x.j.error || 'Failed'); if (mode === 'register') loadChallenge(); return; }
       localStorage.setItem(key, x.j.token);
       window.location.href = './';
     }).catch(function () { msg.textContent = '⚠ Cannot reach the account server.'; });

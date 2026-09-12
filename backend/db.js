@@ -37,5 +37,19 @@ async function setPlan(userId, plan) {
   );
   return rowToUser(rows[0]);
 }
+async function updateName(userId, name) {
+  const { rows } = await pool.query(
+    'UPDATE users SET name = $1 WHERE id = $2 RETURNING *',
+    [name, userId]
+  );
+  return rowToUser(rows[0]);
+}
+async function setPassHash(userId, passHash) {
+  const { rows } = await pool.query(
+    'UPDATE users SET pass_hash = $1 WHERE id = $2 RETURNING *',
+    [passHash, userId]
+  );
+  return rowToUser(rows[0]);
+}
 function publicUser(u) { return { id: u.id, name: u.name, email: u.email, provider: u.provider, plan: u.plan, createdAt: u.createdAt }; }
-module.exports = { findByEmail, findByProvider, createUser, setPlan, publicUser };
+module.exports = { findByEmail, findByProvider, createUser, setPlan, updateName, setPassHash, publicUser, query: (t, p) => pool.query(t, p) };
