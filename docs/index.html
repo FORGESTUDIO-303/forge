@@ -9,6 +9,18 @@
 <meta name="theme-color" content="#0a0e17">
 <link rel="stylesheet" href="styles.css">
 <script src="gate.js"></script>
+<script>
+  // Ads: paste your AdSense publisher ID to serve real ads. Until then,
+  // the slots above show the launch-partner placeholder. No account needed.
+  window.ADSENSE_CLIENT = ''; // e.g. 'ca-pub-1234567890123456'
+  if (window.ADSENSE_CLIENT) {
+    var s = document.createElement('script');
+    s.async = true;
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + window.ADSENSE_CLIENT;
+    s.crossOrigin = 'anonymous';
+    document.head.appendChild(s);
+  }
+</script>
 </head>
 <body>
 <header class="nav">
@@ -58,11 +70,16 @@
   </div>
 </section>
 
+<section class="wrap adslot" data-ad="under-hero">
+  <!-- Ad slot 1. Set window.ADSENSE_CLIENT='ca-pub-XXXX' in the config below once AdSense approves you. -->
+  <div class="ad-box"><span>Advertisement</span><p class="fine">Launch-partner slot — your brand here.</p></div>
+</section>
+
 <section class="stats wrap">
   <div><b>25+</b><span>apps &amp; games planned</span></div>
   <div><b>6</b><span>platforms from one codebase</span></div>
-  <div><b>100%</b><span>offline-first core</span></div>
-  <div><b>0</b><span>ads • 0 trackers</span></div>
+  <div><b>100%</b><span>free forever</span></div>
+  <div><b>0</b><span>trackers of our own</span></div>
 </section>
 
 <section id="projects" class="wrap">
@@ -178,9 +195,12 @@
     </form>
   </div>
 </section>
+<section class="wrap adslot" data-ad="pre-footer">
+  <div class="ad-box wide"><span>Advertisement</span><p class="fine">Supports free-forever hosting. No trackers beyond the ad network itself.</p></div>
+</section>
 </main>
 
-<footer><div class="wrap foot"><span>◈ FORGE — offline-first studio. No ads, no trackers.</span><span><a href="login.html">Log in</a> · <a href="#free">Free forever</a> · Built by Souhail with Muse Spark · <span id="yr"></span></span></div></footer>
+<footer><div class="wrap foot"><span>◈ FORGE — free forever. No trackers of our own.</span><span><a href="login.html">Log in</a> · <a href="#free">Free forever</a> · Built by Souhail with Muse Spark · <span id="yr"></span></span></div></footer>
 <div class="modal" id="authModal" aria-hidden="true">
   <div class="box" role="dialog" aria-modal="true" aria-label="Login or register">
     <button class="box-x" id="authClose" aria-label="Close login dialog">✕</button>

@@ -41,7 +41,7 @@
   }
   function open() { modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false'); setMode(token() ? 'login' : mode); document.getElementById('authEmail').focus(); }
   function close() { modal.classList.remove('open'); modal.setAttribute('aria-hidden', 'true'); msg.textContent = ''; loginBtn.focus(); }
-  loginBtn.onclick = open;
+  loginBtn.onclick = function () { window.location.href = 'login.html'; };
   document.getElementById('authClose').onclick = close;
   modal.addEventListener('click', function (e) { if (e.target === modal) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('open')) close(); });
