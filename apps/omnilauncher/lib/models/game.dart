@@ -11,6 +11,8 @@ class Game {
   DateTime? lastPlayed;
   String execPath;
   int colorSeed;
+  int rating; // 0..5 stars
+  String notes;
 
   Game({
     required this.id,
@@ -22,6 +24,8 @@ class Game {
     this.lastPlayed,
     this.execPath = '',
     this.colorSeed = 0,
+    this.rating = 0,
+    this.notes = '',
   });
 
   Map<String, dynamic> toJson() => {
@@ -34,6 +38,8 @@ class Game {
         'lastPlayed': lastPlayed?.toIso8601String(),
         'execPath': execPath,
         'colorSeed': colorSeed,
+        'rating': rating,
+        'notes': notes,
       };
 
   factory Game.fromJson(Map<String, dynamic> j) => Game(
@@ -48,12 +54,15 @@ class Game {
             : DateTime.tryParse(j['lastPlayed'] as String),
         execPath: j['execPath'] as String? ?? '',
         colorSeed: (j['colorSeed'] as num?)?.toInt() ?? 0,
+        rating: (j['rating'] as num?)?.toInt() ?? 0,
+        notes: j['notes'] as String? ?? '',
       );
 
   static List<Game> sample() {
     final now = DateTime.now();
     var i = 0;
-    Game mk(String t, String p, String c, int mins, int daysAgo, bool fav) =>
+    Game mk(String t, String p, String c, int mins, int daysAgo, bool fav,
+            {int rating = 0, String notes = ''}) =>
         Game(
           id: 'sample-${i++}',
           title: t,
@@ -63,13 +72,24 @@ class Game {
           lastPlayed: now.subtract(Duration(days: daysAgo)),
           favorite: fav,
           colorSeed: i * 47,
+          rating: rating,
+          notes: notes,
         );
     return [
-      mk('Neon Rogue', 'PC', 'Roguelike', 128 * 60, 0, true),
-      mk('Card Battler Legends', 'PC', 'Card Game', 42 * 60, 2, true),
-      mk('Idle Empire Tycoon', 'Mobile', 'Idle', 300 * 60, 5, false),
-      mk('Rhythm Combat', 'PC', 'Action', 18 * 60, 1, false),
+      mk('Neon Rogue', 'PC', 'Roguelike', 128 * 60, 0, true,
+          rating: 5, notes: 'Endless neon dungeon crawler — my daily run.'),
+      mk('Card Battler Legends', 'PC', 'Card Game', 42 * 60, 2, true,
+          rating: 4, notes: 'Deck is almost meta-ready.'),
+      mk('Idle Empire Tycoon', 'Mobile', 'Idle', 300 * 60, 5, false,
+          rating: 2),
+      mk('Rhythm Combat', 'PC', 'Action', 18 * 60, 1, false,
+          rating: 3, notes: 'Try on hardcore difficulty next.'),
     ];
+  }
+
+  String get stars {
+    if (rating <= 0) return '';
+    return List.filled(rating, '★').join();
   }
 
   String get playtimeLabel {

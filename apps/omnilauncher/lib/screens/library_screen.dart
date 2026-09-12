@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import '../models/game.dart';
 import '../store/library_store.dart';
+import '../theme.dart';
 
 const _accents = [
-  Colors.cyan,
-  Colors.purple,
-  Colors.pink,
-  Colors.teal,
-  Colors.orange,
-  Colors.indigo,
-  Colors.green,
-  Colors.amber,
+  ForgeColors.cy,
+  ForgeColors.vi,
+  ForgeColors.mg,
+  ForgeColors.gr,
+  ForgeColors.gold,
+  ForgeColors.cy,
 ];
 
 class LibraryScreen extends StatefulWidget {
@@ -43,7 +42,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
         list.sort((a, b) => b.playtimeMinutes.compareTo(a.playtimeMinutes));
         break;
       case 'az':
-        list.sort((a, b) => a.title.compareTo(b.title));
+        list.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+        break;
+      case 'rated':
+        list.sort((a, b) => b.rating.compareTo(a.rating));
         break;
       default:
         list.sort((a, b) => (b.lastPlayed ?? DateTime.fromMillisecondsSinceEpoch(0))
@@ -58,11 +60,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
     final mins = store.totalMinutes;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('◈ OmniLauncher'),
+        title: Row(
+          children: const [
+            Text('◈ ', style: TextStyle(color: ForgeColors.cy)),
+            Text('OmniLauncher'),
+          ],
+        ),
         actions: [
           IconButton(
             tooltip: favOnly ? 'Show all' : 'Favorites only',
-            icon: Icon(favOnly ? Icons.star : Icons.star_border),
+            icon: Icon(favOnly ? Icons.filter_alt : Icons.filter_alt_outlined),
             onPressed: () => setState(() => favOnly = !favOnly),
           ),
           IconButton(
@@ -77,6 +84,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
             itemBuilder: (_) => const [
               PopupMenuItem(value: 'recent', child: Text('Recently played')),
               PopupMenuItem(value: 'played', child: Text('Most played')),
+              PopupMenuItem(value: 'rated', child: Text('Top rated')),
               PopupMenuItem(value: 'az', child: Text('A – Z')),
             ],
           ),
@@ -84,20 +92,20 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
       body: Column(
         children: [
+          _heroStrip(store, mins),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
             child: TextField(
               decoration: const InputDecoration(
                 prefixIcon: Icon(Icons.search),
                 hintText: 'Search your library…',
-                border: OutlineInputBorder(),
                 isDense: true,
               ),
               onChanged: (v) => setState(() => query = v),
             ),
           ),
           SizedBox(
-            height: 44,
+            height: 46,
             child: ListView(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -114,42 +122,34 @@ class _LibraryScreenState extends State<LibraryScreen> {
               }).toList(),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            child: Row(
-              children: [
-                Text('${store.games.length} games',
-                    style: Theme.of(context).textTheme.bodyMedium),
-                const SizedBox(width: 12),
-                Text('▶ ${mins ~/ 60}h ${mins % 60}m played',
-                    style: Theme.of(context).textTheme.bodyMedium),
-                const SizedBox(width: 12),
-                Text('★ ${store.favorites}',
-                    style: Theme.of(context).textTheme.bodyMedium),
-              ],
-            ),
-          ),
           const Divider(height: 1),
           Expanded(
             child: visible.isEmpty
-                ? const Center(
-                    child: Text('Nothing here — add your first game with +'))
+                ? const Center(child: Text('Nothing here — add your first game with +'))
                 : grid
                     ? GridView.builder(
                         padding: const EdgeInsets.all(12),
                         gridDelegate:
                             const SliverGridDelegateWithMaxCrossAxisExtent(
                           maxCrossAxisExtent: 220,
-                          childAspectRatio: 0.82,
+                          childAspectRatio: 0.78,
                           crossAxisSpacing: 12,
                           mainAxisSpacing: 12,
                         ),
                         itemCount: visible.length,
-                        itemBuilder: (_, i) => _card(visible[i]),
+                        itemBuilder: (_, i) => _Entrance(
+                          index: i,
+                          key: ObjectKey(visible[i].id),
+                          child: _card(visible[i]),
+                        ),
                       )
                     : ListView.builder(
                         itemCount: visible.length,
-                        itemBuilder: (_, i) => _tile(visible[i]),
+                        itemBuilder: (_, i) => _Entrance(
+                          index: i,
+                          key: ObjectKey(visible[i].id),
+                          child: _tile(visible[i]),
+                        ),
                       ),
           ),
         ],
@@ -161,6 +161,57 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
     );
   }
+
+  Widget _heroStrip(LibraryStore store, int mins) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [ForgeColors.card, ForgeColors.bg2],
+        ),
+        border: Border.all(color: ForgeColors.line),
+        boxShadow: [
+          BoxShadow(color: ForgeColors.cy.withValues(alpha: 0.10), blurRadius: 28),
+        ],
+      ),
+      child: Row(
+        children: [
+          _stat('${store.games.length}', 'GAMES'),
+          _statDivider(),
+          _stat('${mins ~/ 60}h ${mins % 60}m', 'PLAYED'),
+          _statDivider(),
+          _stat('${store.favorites}', 'FAVORITES'),
+          const Spacer(),
+          const Icon(Icons.diamond_outlined, color: ForgeColors.gold, size: 22),
+        ],
+      ),
+    );
+  }
+
+  Widget _stat(String value, String label) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(value,
+            style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+                color: ForgeColors.txt)),
+        Text(label,
+            style: const TextStyle(fontSize: 10, letterSpacing: 1.5, color: ForgeColors.mut)),
+      ],
+    );
+  }
+
+  Widget _statDivider() =>
+      const Padding(padding: EdgeInsets.symmetric(horizontal: 12), child: SizedBox(
+        height: 30,
+        child: VerticalDivider(color: ForgeColors.line, thickness: 1),
+      ));
 
   Color _accent(Game g) => _accents[g.colorSeed % _accents.length];
 
@@ -174,15 +225,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
-              height: 86,
-              color: a.withValues(alpha: 0.25),
+              height: 84,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [a.withValues(alpha: 0.30), a.withValues(alpha: 0.06)],
+                ),
+              ),
               alignment: Alignment.center,
               child: Text(
-                g.title.isEmpty
-                    ? '?'
-                    : g.title.trim()[0].toUpperCase(),
+                g.title.isEmpty ? '?' : g.title.trim()[0].toUpperCase(),
                 style: TextStyle(
-                    fontSize: 44, fontWeight: FontWeight.w800, color: a),
+                    fontSize: 44,
+                    fontWeight: FontWeight.w800,
+                    color: a,
+                    shadows: [Shadow(color: a.withValues(alpha: 0.6), blurRadius: 24)]),
               ),
             ),
             Padding(
@@ -196,17 +254,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold))),
+                                fontWeight: FontWeight.bold, color: ForgeColors.txt))),
                     InkWell(
                       onTap: () => widget.store.toggleFavorite(g.id),
-                      child: Icon(
-                          g.favorite ? Icons.star : Icons.star_border,
+                      child: Icon(g.favorite ? Icons.star : Icons.star_border,
                           size: 20,
-                          color: g.favorite ? Colors.amber : null),
+                          color: g.favorite ? ForgeColors.gold : ForgeColors.mut),
                     ),
                   ]),
+                  if (g.rating > 0)
+                    Text(g.stars,
+                        style: const TextStyle(
+                            color: ForgeColors.gold,
+                            fontSize: 13,
+                            letterSpacing: 1.5)),
                   Text('${g.platform} • ${g.playtimeLabel}',
-                      style: Theme.of(context).textTheme.bodySmall),
+                      style: const TextStyle(color: ForgeColors.mut, fontSize: 12)),
                   const SizedBox(height: 6),
                   Row(children: [
                     IconButton(
@@ -215,16 +278,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: () => _play(g),
-                        icon: const Icon(Icons.play_arrow)),
+                        icon: Icon(Icons.play_arrow, color: ForgeColors.cy)),
                     const SizedBox(width: 8),
                     IconButton(
                         tooltip: '+15 min',
                         iconSize: 20,
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
-                        onPressed: () =>
-                            widget.store.addPlaytime(g.id, 15),
-                        icon: const Icon(Icons.timer)),
+                        onPressed: () => widget.store.addPlaytime(g.id, 15),
+                        icon: const Icon(Icons.timer, color: ForgeColors.mut)),
+                    if (g.notes.isNotEmpty)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4),
+                        child: Icon(Icons.sticky_note_2_outlined,
+                            size: 15, color: ForgeColors.mut),
+                      ),
                     const Spacer(),
                     IconButton(
                         tooltip: 'Edit',
@@ -232,7 +300,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
                         onPressed: () => _editDialog(g),
-                        icon: const Icon(Icons.edit)),
+                        icon: const Icon(Icons.edit_outlined)),
                     IconButton(
                         tooltip: 'Delete',
                         iconSize: 20,
@@ -252,38 +320,45 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Widget _tile(Game g) {
     final a = _accent(g);
-    return ListTile(
-      leading: CircleAvatar(
-          backgroundColor: a.withValues(alpha: 0.25),
-          child: Text(
-              g.title.isEmpty ? '?' : g.title.trim()[0].toUpperCase(),
-              style: TextStyle(color: a, fontWeight: FontWeight.bold))),
-      title: Text(g.title),
-      subtitle: Text('${g.platform} • ${g.category} • ${g.playtimeLabel}'),
-      trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-        IconButton(
-            tooltip: 'Favorite',
-            onPressed: () => widget.store.toggleFavorite(g.id),
-            icon: Icon(g.favorite ? Icons.star : Icons.star_border,
-                color: g.favorite ? Colors.amber : null)),
-        IconButton(
-            tooltip: 'Play',
-            onPressed: () => _play(g),
-            icon: const Icon(Icons.play_arrow)),
-        IconButton(
-            tooltip: 'Edit',
-            onPressed: () => _editDialog(g),
-            icon: const Icon(Icons.edit)),
-      ]),
-      onTap: () => _play(g),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: ListTile(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        leading: CircleAvatar(
+            backgroundColor: a.withValues(alpha: 0.22),
+            child: Text(
+                g.title.isEmpty ? '?' : g.title.trim()[0].toUpperCase(),
+                style: TextStyle(color: a, fontWeight: FontWeight.bold))),
+        title: Text(g.title, style: const TextStyle(color: ForgeColors.txt)),
+        subtitle: Text(
+          '${g.platform} • ${g.category} • ${g.playtimeLabel}'
+          '${g.rating > 0 ? '  ${g.stars}' : ''}',
+          style: const TextStyle(color: ForgeColors.mut),
+        ),
+        trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+          IconButton(
+              tooltip: 'Favorite',
+              onPressed: () => widget.store.toggleFavorite(g.id),
+              icon: Icon(g.favorite ? Icons.star : Icons.star_border,
+                  color: g.favorite ? ForgeColors.gold : ForgeColors.mut)),
+          IconButton(
+              tooltip: 'Play',
+              onPressed: () => _play(g),
+              icon: Icon(Icons.play_arrow, color: ForgeColors.cy)),
+          IconButton(
+              tooltip: 'Edit',
+              onPressed: () => _editDialog(g),
+              icon: const Icon(Icons.edit_outlined)),
+        ]),
+        onTap: () => _play(g),
+      ),
     );
   }
 
   Future<void> _play(Game g) async {
     final msg = await widget.store.play(g);
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(msg)));
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
   Future<void> _confirmDelete(Game g) async {
@@ -293,12 +368,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
         title: const Text('Remove game?'),
         content: Text('"${g.title}" leaves your library (files untouched).'),
         actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel')),
-          FilledButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Remove')),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Remove')),
         ],
       ),
     );
@@ -308,8 +379,10 @@ class _LibraryScreenState extends State<LibraryScreen> {
   Future<void> _editDialog(Game? g) async {
     final title = TextEditingController(text: g?.title ?? '');
     final exec = TextEditingController(text: g?.execPath ?? '');
+    final notes = TextEditingController(text: g?.notes ?? '');
     String plat = g?.platform ?? 'PC';
     String cat = g?.category ?? 'Other';
+    int rating = g?.rating ?? 0;
     const cats = [
       'Action', 'Roguelike', 'Card Game', 'Idle', 'RPG',
       'Strategy', 'Sports', 'Puzzle', 'Other'
@@ -324,28 +397,47 @@ class _LibraryScreenState extends State<LibraryScreen> {
               TextField(
                   controller: title,
                   autofocus: true,
-                  decoration:
-                      const InputDecoration(labelText: 'Title *')),
+                  decoration: const InputDecoration(labelText: 'Title *')),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: plat,
                 decoration: const InputDecoration(labelText: 'Platform'),
-                items: kPlatforms
-                    .map((p) =>
-                        DropdownMenuItem(value: p, child: Text(p)))
-                    .toList(),
+                items:
+                    kPlatforms.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
                 onChanged: (v) => setD(() => plat = v ?? plat),
               ),
               const SizedBox(height: 8),
               DropdownButtonFormField<String>(
                 initialValue: cats.contains(cat) ? cat : 'Other',
                 decoration: const InputDecoration(labelText: 'Category'),
-                items: cats
-                    .map((c) =>
-                        DropdownMenuItem(value: c, child: Text(c)))
-                    .toList(),
+                items:
+                    cats.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
                 onChanged: (v) => setD(() => cat = v ?? cat),
               ),
+              const SizedBox(height: 8),
+              Row(children: [
+                const Text('Rating', style: TextStyle(color: ForgeColors.mut)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Slider(
+                    value: rating.toDouble(),
+                    min: 0,
+                    max: 5,
+                    divisions: 5,
+                    label: rating <= 0 ? 'Unrated' : '${'★' * rating}',
+                    onChanged: (v) => setD(() => rating = v.toInt()),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Text(rating <= 0 ? '—' : '★' * rating, style: const TextStyle(color: ForgeColors.gold)),
+              ]),
+              const SizedBox(height: 8),
+              TextField(
+                  controller: notes,
+                  maxLines: 3,
+                  maxLength: 300,
+                  decoration:
+                      const InputDecoration(labelText: 'Notes (optional)')),
               const SizedBox(height: 8),
               TextField(
                   controller: exec,
@@ -355,12 +447,8 @@ class _LibraryScreenState extends State<LibraryScreen> {
             ]),
           ),
           actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(ctx, false),
-                child: const Text('Cancel')),
-            FilledButton(
-                onPressed: () => Navigator.pop(ctx, true),
-                child: const Text('Save')),
+            TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
+            FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Save')),
           ],
         ),
       ),
@@ -374,13 +462,63 @@ class _LibraryScreenState extends State<LibraryScreen> {
         category: cat,
         execPath: exec.text.trim(),
         colorSeed: DateTime.now().millisecond,
+        rating: rating,
+        notes: notes.text.trim(),
       ));
     } else {
       g.title = title.text.trim();
       g.platform = plat;
       g.category = cat;
       g.execPath = exec.text.trim();
+      g.rating = rating;
+      g.notes = notes.text.trim();
       await widget.store.update(g);
     }
+  }
+}
+
+/// Staggered slide+reveal that runs once per widget (keyed by game id).
+class _Entrance extends StatefulWidget {
+  final int index;
+  final Widget child;
+  const _Entrance({super.key, required this.index, required this.child});
+
+  @override
+  State<_Entrance> createState() => _EntranceState();
+}
+
+class _EntranceState extends State<_Entrance> with SingleTickerProviderStateMixin {
+  late final AnimationController _c;
+  late final Animation<double> _fade;
+  late final Animation<double> _up;
+
+  @override
+  void initState() {
+    super.initState();
+    _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 420));
+    _fade = CurvedAnimation(parent: _c, curve: Curves.easeOut);
+    _up = Tween(begin: 16.0, end: 0.0).animate(
+        CurvedAnimation(parent: _c, curve: Curves.easeOutCubic));
+    Future.delayed(Duration(milliseconds: widget.index * 55), () {
+      if (mounted) _c.forward();
+    });
+  }
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _c,
+      child: widget.child,
+      builder: (_, child) => Opacity(
+        opacity: _fade.value,
+        child: Transform.translate(offset: Offset(0, _up.value), child: child),
+      ),
+    );
   }
 }

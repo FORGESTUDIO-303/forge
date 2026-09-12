@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'screens/dashboard_screen.dart';
 import 'store/system_store.dart';
+import 'theme.dart';
+import 'splash.dart';
 
 void main() {
   runApp(const ForgeApp());
@@ -33,23 +35,19 @@ class _ForgeAppState extends State<ForgeApp> {
     return MaterialApp(
       title: 'Forge Control',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.orange,
-          brightness: Brightness.dark,
+      theme: forgeDarkTheme(),
+      home: ForgeSplash(
+        title: 'Forge Control',
+        tagline: 'Know your rig.',
+        next: AnimatedBuilder(
+          animation: store,
+          builder: (_, _) {
+            if (!store.loaded) {
+              return const Scaffold(body: Center(child: CircularProgressIndicator()));
+            }
+            return DashboardScreen(store: store);
+          },
         ),
-        useMaterial3: true,
-      ),
-      home: AnimatedBuilder(
-        animation: store,
-        builder: (_, _) {
-          if (!store.loaded) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-          return DashboardScreen(store: store);
-        },
       ),
     );
   }
