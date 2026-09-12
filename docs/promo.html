@@ -159,13 +159,12 @@ body{
 <div id="bars"><div class="b t"></div><div class="b bt"></div></div>
 <div id="wm">◈ FORGESTUDIO-303</div>
 <div id="hud"><div id="prog"></div></div>
-<div id="ctrl"><button id="btnAudio" title="sound">♫ Sound: OFF</button><button id="btnReplay">↻ Replay</button></div>
+<div id="ctrl"><button id="btnReplay">↻ Replay</button></div>
 
 <script>
 (function () {
   var film = document.getElementById('film');
   var prog = document.getElementById('prog');
-  var btnAudio = document.getElementById('btnAudio');
   var btnReplay = document.getElementById('btnReplay');
   var GLYPH = '<svg class="diamond-svg" viewBox="0 0 96 96" fill="none"><path d="M48 6 L90 48 L48 90 L6 48 Z" stroke="url(#gg)" stroke-width="3" stroke-linejoin="round" fill="url(#fgg)"/><path d="M48 6 L48 90 M6 48 L90 48" stroke="url(#gg)" stroke-width="1.6" opacity=".5"/><circle cx="48" cy="48" r="6" fill="url(#gg)"/><defs><linearGradient id="gg" x1="0" y1="0" x2="96" y2="96"><stop stop-color="#e8c15a"/><stop offset="1" stop-color="#b98a2e"/></linearGradient><linearGradient id="fgg" x1="0" y1="0" x2="96" y2="96"><stop stop-color="#e8c15a" stop-opacity=".16"/><stop offset="1" stop-color="#b98a2e" stop-opacity=".04"/></linearGradient></defs></svg>';
   var CYAN = '#22d3ee', GOLD = '#e8c15a', MG = '#f472b6', VI = '#a78bfa', GR = '#34d399';
@@ -318,7 +317,6 @@ body{
     cur = from || 0;
     show(cur);
     step();
-    audio.start();
   }
 
   function step() {
@@ -343,49 +341,6 @@ body{
     }, scenes[cur].dur * 1000);
   }
 
-  /* ambient sub-pad: slow breathing low hum, no siren */
-  var audio = { on: false, ctx: null, nodes: [], start: function () {
-    if (!this.on || this.ctx) return;
-    try {
-      var c = new (window.AudioContext || window.webkitAudioContext)();
-      this.ctx = c;
-      var out = c.createGain(); out.gain.value = 0.0; out.connect(c.destination);
-      var f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 190; f.Q.value = 0.6; f.connect(out);
-      [55, 82.5, 110].forEach(function (hz, i) {
-        var o = c.createOscillator();
-        o.type = i === 2 ? 'triangle' : 'sine';
-        o.frequency.value = hz;
-        o.detune.value = -4 + i * 3;
-        o.connect(f); o.start();
-        audio.nodes.push(o);
-      });
-      /* slow volume shimmer (0.07Hz) on the master, not on pitch */
-      var lfo = c.createOscillator(); lfo.frequency.value = 0.07; lfo.start();
-      var lg = c.createGain(); lg.gain.value = 0.014; lfo.connect(lg);
-      lg.connect(out.gain); audio.nodes.push(lfo, lg);
-      /* fade in over 2s (browsers need a resume kick on click anyway) */
-      var t0 = c.currentTime;
-      out.gain.setValueAtTime(0.0, t0);
-      out.gain.linearRampToValueAtTime(0.045, t0 + 2);
-      audio.masterGain = out.gain; audio.fade = null;
-      btnAudio.textContent = '♫ Sound: ON';
-      carryClicks();
-    } catch (_) { audio.on = false; btnAudio.textContent = '♫ Sound: OFF'; }
-  }, stop: function () {
-    if (!this.ctx) return;
-    try { this.nodes.forEach(function (n) { try { n.stop(); } catch (_) {}; }); } catch (_) {}
-    this.ctx.close(); this.ctx = null;
-  } };
-  function carryClicks() {
-    if (audio.on && audio.ctx && audio.ctx.state === 'suspended') audio.ctx.resume();
-  }
-  document.addEventListener('click', carryClicks);
-
-  btnAudio.addEventListener('click', function () {
-    audio.on = !audio.on;
-    if (audio.on) { audio.start(); btnAudio.textContent = '♫ Sound: ON'; }
-    else { audio.stop(); btnAudio.textContent = '♫ Sound: OFF'; }
-  });
   btnReplay.addEventListener('click', function () { play(0); });
 
   play(0);
