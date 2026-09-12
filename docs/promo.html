@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORGE — Brand Film</title>
+<meta name="description" content="FORGESTUDIO-303: six open-source apps. Free forever.">
+<meta name="theme-color" content="#0a0e17">
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+<style>
+:root{
+  --bg:#0a0e17; --bg2:#0f1524; --card:#131b30; --line:#1e2a47;
+  --txt:#e8edf7; --mut:#9aa7c4; --cy:#22d3ee; --mg:#f472b6;
+  --vi:#a78bfa; --gr:#34d399; --gold:#e8c15a; --gold2:#b98a2e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:radial-gradient(1200px 700px at 80% -10%,#1b2a52 0%,var(--bg) 55%) fixed,var(--bg);
+  color:var(--txt);
+  font:16px/1.6 "Segoe UI",system-ui,Roboto,Arial,sans-serif;
+  overflow:hidden;
+}
+#film{position:fixed;inset:0}
+.scene{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;padding:5vh 4vw;
+  opacity:0;pointer-events:none;
+  transition:opacity 1s ease;transform:scale(1.02);
+}
+.scene.live{opacity:1;pointer-events:auto;transform:scale(1)}
+/* ---- grain ---- */
+#grain{position:fixed;inset:-50%;z-index:60;pointer-events:none;opacity:.05;
+  background-image:repeating-radial-gradient(circle at 20% 30%, #fff 0,#000 1px,transparent 2px,transparent 6px);
+  background-size:8px 8px;animation:grain 1.2s steps(4) infinite}
+@keyframes grain{0%{transform:translate(0,0)}25%{transform:translate(-2%,1%)}50%{transform:translate(1%,-2%)}75%{transform:translate(-1%,2%)}100%{transform:translate(0,0)}}
+/* ---- letterbox ---- */
+#bars{position:fixed;left:0;right:0;z-index:55;pointer-events:none}
+#bars .b{position:absolute;left:0;right:0;height:9vh;background:#000}
+#bars .t{top:0}#bars .bt{bottom:0}
+@media (max-width:800px){#bars .b{height:0}}
+/* ---- shared anim primitives ---- */
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
+@keyframes spinHold{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes glowP{0%,100%{filter:drop-shadow(0 0 12px rgba(34,211,238,.55))}50%{filter:drop-shadow(0 0 30px rgba(34,211,238,.95))}}
+@keyframes goldGlow{0%,100%{filter:drop-shadow(0 0 10px rgba(232,193,90,.5))}50%{filter:drop-shadow(0 0 26px rgba(232,193,90,.9))}}
+@keyframes shimmer{from{background-position:0% 50%}to{background-position:200% 50%}}
+@keyframes rise{from{transform:translateY(0)}to{transform:translateY(-46vh)}}
+@keyframes ring{from{transform:scale(.3);opacity:.9}to{transform:scale(1.6);opacity:0}}
+@keyframes pulseLine{0%{transform:scaleX(0);opacity:0}20%{opacity:1}100%{transform:scaleX(1);opacity:0}}
+@keyframes barGrow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes orbit{from{transform:rotate(0) translateX(120px) rotate(0)}to{transform:rotate(360deg) translateX(120px) rotate(-360deg)}}
+@keyframes tickUp{from{opacity:0}to{opacity:.5}}
+@keyframes letterIn{from{opacity:0;transform:translateY(40px) rotate(0deg)}to{opacity:1;transform:none}}
+@keyframes scanline{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+
+/* ---- shared text styles ---- */
+.kicker{font-size:12px;letter-spacing:5px;font-weight:700;color:var(--cy);text-transform:uppercase}
+.kicker.gold{color:var(--gold)}
+.title{
+  font-size:clamp(44px,9vw,118px);font-weight:900;letter-spacing:.04em;line-height:1.02;
+  background:linear-gradient(120deg,#fff 25%,var(--cy) 60%,var(--mg) 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.title.gold{background:linear-gradient(120deg,#ffe9a8 20%,var(--gold) 55%,var(--gold2) 100%);-webkit-background-clip:text;background-clip:text}
+.sub{color:var(--mut);font-size:clamp(14px,2.2vw,22px);letter-spacing:2px;margin-top:16px}
+.big-diamond{width:min(120px,26vw);height:min(120px,26vw);animation:glowP 3s ease-in-out infinite}
+.diamond-svg{width:100%;height:100%;display:block}
+
+/* scene children order-effect helpers */
+.scene.live .a1{animation:fadeUp .9s ease .1s both}
+.scene.live .a2{animation:fadeUp .9s ease .5s both}
+.scene.live .a3{animation:fadeUp .9s ease .9s both}
+.scene.live .a4{animation:fadeUp .9s ease 1.3s both}
+.scene.live .apop{animation:pop .8s cubic-bezier(.2,.9,.3,1.4) 1.6s both}
+
+/* ---- fake app panel ---- */
+.panel{
+  width:min(560px,86vw);background:linear-gradient(180deg,var(--card),#0e1528);
+  border:1px solid var(--line);border-radius:22px;padding:22px;
+  box-shadow:0 40px 110px rgba(0,0,0,.55),0 0 60px -18px rgba(34,211,238,.35);
+  position:relative;overflow:hidden;margin-top:30px;text-align:left;
+}
+.panel .bar{display:flex;gap:8px;margin-bottom:14px}
+.panel .bar i{width:11px;height:11px;border-radius:50%;background:#334155}
+.panel .bar i:nth-child(1){background:#f87171}
+.panel .bar i:nth-child(2){background:#fbbf24}
+.panel .bar i:nth-child(3){background:#34d399}
+.prow{display:flex;justify-content:space-between;margin-top:8px}
+.stats{display:flex;gap:16px;margin:10px 0}
+.stat b{display:block;font-size:18px;color:var(--cy)}
+.stat span{font-size:10px;letter-spacing:1.5px;color:var(--mut)}
+.gcard{
+  flex:1;border:1px solid var(--line);border-radius:12px;padding:12px 10px;
+  background:#0c1327;transform-origin:center;
+  animation:fadeUp .7s ease both;
+}
+.gcard b{display:block;font-size:13px}
+.gcard span{font-size:11px;color:var(--mut)}
+.gcard .glyph{width:26px;height:26px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;margin-bottom:8px}
+.stars{color:var(--gold);font-size:12px;letter-spacing:2px}
+.play{display:inline-flex;align-items:center;gap:6px;background:var(--cy);color:#04121a;border-radius:99px;padding:5px 12px;font-size:11px;font-weight:800;margin-top:8px}
+.spark{height:70px;position:relative;margin-top:6px}
+.spark svg{width:100%;height:100%}
+.gaugeWrap{position:relative;width:110px;height:110px;margin:0 auto}
+.gaugeWrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.meter{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.meter > div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cy),var(--vi));transform-origin:left;animation:barGrow 1.6s ease both}
+.orb-rig{position:relative;width:200px;height:200px;margin:0 auto}
+.orb{position:absolute;inset:0;margin:auto;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+.orbA{background:rgba(34,211,238,.15);border:1px solid var(--cy);animation:orbit 6s linear infinite}
+.orbB{background:rgba(232,193,90,.15);border:1px solid var(--gold);animation:orbit 9s linear infinite reverse}
+.orbC{background:rgba(167,139,250,.15);border:1px solid var(--vi);animation:orbit 12s linear infinite}
+.pulse{position:absolute;inset:26px;border-radius:50%;border:2px solid var(--cy);animation:ring 2.4s ease-out infinite}
+.pulse.l2{animation-delay:1.2s;border-color:var(--gold)}
+.boost-meter{width:min(320px,70vw);height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:18px auto 0}
+.boost-meter > div{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),var(--mg),var(--cy));transform-origin:left;animation:barGrow 2.2s cubic-bezier(.2,.9,.2,1) both}
+.brush{width:120px;height:120px;position:relative;margin:0 auto}
+.brush .dot{position:absolute;border-radius:50%;filter:blur(2px)}
+.brush .d1{width:60px;height:60px;background:radial-gradient(circle,var(--cy),transparent 70%);animation:fadeUp 1.4s ease both}
+.brush .d2{width:90px;height:90px;background:radial-gradient(circle,var(--gold),transparent 70%);animation:fadeUp 1.4s ease 1.2s both;left:40px;top:30px}
+.brush .d3{width:40px;height:40px;background:radial-gradient(circle,var(--mg),transparent 70%);animation:fadeUp 1.4s ease 2.4s both;left:70px}
+.timeline-row{display:flex;gap:6px;margin-top:18px}
+.tline{flex:1;height:10px;border-radius:6px;background:#0c1327;border:1px solid var(--line);position:relative;overflow:hidden}
+.tline > div{position:absolute;inset:0;background:linear-gradient(90deg,var(--gold),var(--cy));transform-origin:left;animation:barGrow 1.2s ease both}
+.viewers{font-size:30px;font-weight:900;color:var(--gold)}
+.chat{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+.chat span{font-size:11px;color:var(--mut);opacity:0;animation:tickUp .3s ease}
+.live-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(232,193,90,.12);border:1px solid var(--gold);color:var(--gold);
+  border-radius:99px;padding:2px 12px;font-size:11px;font-weight:800;letter-spacing:2px}
+.live-badge::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);animation:glowP 1.2s infinite}
+
+/* particles behind finale */
+#riseParticles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+#riseParticles span{position:absolute;bottom:-10px;width:4px;height:4px;border-radius:50%;
+  background:var(--gold);opacity:.7;animation:rise linear infinite}
+#scanline{position:absolute;left:0;right:0;height:120px;background:linear-gradient(180deg,transparent,rgba(34,211,238,.12),transparent);animation:scanline 7s linear infinite}
+
+/* watermark */
+#wm{position:fixed;right:18px;bottom:16px;z-index:70;display:flex;align-items:center;gap:8px;
+  color:var(--gold);font-size:12px;letter-spacing:2px;opacity:.65;pointer-events:none}
+#wm svg{width:18px;height:18px}
+
+/* HUD */
+#hud{position:fixed;left:0;right:0;bottom:0;z-index:65;height:6px;background:rgba(255,255,255,.04)}
+#prog{height:100%;width:0%;background:linear-gradient(90deg,var(--cy),var(--gold))}
+#ctrl{position:fixed;top:16px;right:16px;z-index:70;display:flex;gap:10px}
+#ctrl button{background:rgba(19,27,48,.7);border:1px solid var(--line);color:var(--txt);
+  border-radius:99px;padding:8px 14px;font-size:13px;cursor:pointer;font-family:inherit}
+#ctrl button:hover{border-color:var(--cy)}
+</style>
+</head>
+<body>
+<div id="film"></div>
+<div id="scanline" style="display:none"></div>
+<div id="grain"></div>
+<div id="bars"><div class="b t"></div><div class="b bt"></div></div>
+<div id="wm">◈ FORGESTUDIO-303</div>
+<div id="hud"><div id="prog"></div></div>
+<div id="ctrl"><button id="btnAudio" title="sound">♫ Sound: ON</button><button id="btnReplay">↻ Replay</button></div>
+
+<script>
+(function () {
+  var film = document.getElementById('film');
+  var prog = document.getElementById('prog');
+  var btnAudio = document.getElementById('btnAudio');
+  var btnReplay = document.getElementById('btnReplay');
+  var GLYPH = '<svg class="diamond-svg" viewBox="0 0 96 96" fill="none"><path d="M48 6 L90 48 L48 90 L6 48 Z" stroke="url(#gg)" stroke-width="3" stroke-linejoin="round" fill="url(#fgg)"/><path d="M48 6 L48 90 M6 48 L90 48" stroke="url(#gg)" stroke-width="1.6" opacity=".5"/><circle cx="48" cy="48" r="6" fill="url(#gg)"/><defs><linearGradient id="gg" x1="0" y1="0" x2="96" y2="96"><stop stop-color="#e8c15a"/><stop offset="1" stop-color="#b98a2e"/></linearGradient><linearGradient id="fgg" x1="0" y1="0" x2="96" y2="96"><stop stop-color="#e8c15a" stop-opacity=".16"/><stop offset="1" stop-color="#b98a2e" stop-opacity=".04"/></linearGradient></defs></svg>';
+  var CYAN = '#22d3ee', GOLD = '#e8c15a', MG = '#f472b6', VI = '#a78bfa', GR = '#34d399';
+
+  var scenes = [];
+
+  function diamondGlyph(glow) {
+    return '<div class="big-diamond" style="' + (glow ? 'animation:glowP 3s infinite' : '') + '">' + GLYPH + '</div>';
+  }
+
+  function panel(content) {
+    return '<div class="panel">' +
+      '<div class="bar"><i></i><i></i><i></i></div>' + content.html + '</div>';
+  }
+
+  /* Act 1 — logo */
+  scenes.push({ dur: 4.4, build: function () {
+    return '<div class="scene">' +
+      diamondGlyph(true) +
+      '<h1 class="title gold a2">FORGE</h1>' +
+      '<p class="sub a3">Open source • Free forever • No ads • No trackers</p>' +
+      '<p class="kicker gold a4">FORGESTUDIO·303</p>' +
+      '</div>';
+  }});
+
+  /* Act 2 — OmniLauncher */
+  scenes.push({ dur: 7, build: function () {
+    var cards = ['Neon Rogue', 'Card Legends', 'Idle Empire'].map(function (t, i) {
+      var col = [CYAN, VI, MG][i];
+      return '<div class="gcard" style="animation-delay:' + (i * .25) + 's">' +
+        '<div class="glyph" style="background:' + col + '22;color:' + col + '">' + t[0] + '</div>' +
+        '<b>' + t + '</b><span>PC • Roguelike</span>' +
+        '<div class="stars">★★★' + (i ? '' : '★★') + '</div>' +
+        '<span class="play">▶ Play</span></div>';
+    }).join('');
+    return '<div class="scene">' +
+      '<p class="kicker a1">01</p>' +
+      '<h1 class="title a2">OMNI<span style="font-size:.55em;vertical-align:middle;color:var(--gold)">LAUNCHER</span></h1>' +
+      '<p class="sub a3">Every game. Every platform. One library.</p>' +
+      panel({ html: '<div class="stats"><div class="stat"><b>128</b><span>GAMES</span></div><div class="stat"><b>1,240h</b><span>PLAYED</span></div><div class="stat"><b>24</b><span>FAVORITES</span></div></div><div class="prow">' + cards + '</div>' }) +
+      '</div>';
+  }});
+
+  /* Act 3 — Forge Control */
+  scenes.push({ dur: 7, build: function () {
+    return '<div class="scene">' +
+      '<p class="kicker a1">02</p>' +
+      '<h1 class="title a2">FORGE <span style="font-size:.55em;vertical-align:middle;color:var(--cy)">CONTROL</span></h1>' +
+      '<p class="sub a3">Know your rig. Tune everything.</p>' +
+      panel({ html: '<div class="stats"><div class="stat" style="flex:1"><div class="gaugeWrap">' +
+        '<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" stroke="#1e2a47" stroke-width="5" fill="none"/><circle cx="20" cy="20" r="17" stroke="#22d3ee" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="80 106.8" style="transition:stroke-dasharray 1.6s ease"/></svg>' +
+        '</div><b style="color:var(--cy)">78%</b><span>CPU</span></div>' +
+        '<div class="stat" style="flex:1"><div class="gaugeWrap"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" stroke="#1e2a47" stroke-width="5" fill="none"/><circle cx="20" cy="20" r="17" stroke="#f472b6" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="64 106.8" style="transition:stroke-dasharray 1.6s ease"/></svg></div><b style="color:var(--mg)">61%</b><span>RAM</span></div></div>' +
+        '<div class="spark"><svg viewBox="0 0 280 70" preserveAspectRatio="none"><path d="M0 55 C30 40 45 65 70 48 C95 30 120 55 145 40 C170 24 195 58 222 34 C245 15 262 40 280 28" stroke="url(#sg)" stroke-width="3" fill="none" style="filter:drop-shadow(0 0 6px rgba(34,211,238,.8))"/><defs><linearGradient id="sg" x1="0" y1="0" x2="280" y2="0"><stop stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs></svg></div>' +
+        '<div class="prow"><span>Fans 40°C</span><div class="meter" style="flex:1;margin:2px 0 0 12px"><div style="width:35%;animation-delay:.4s"></div></div></div>' +
+        '<div class="prow" style="align-items:center"><span>RGB wave</span><span class="stars">◈ ◈ ◈ ◈ ◈</span><span style="font-size:11px;color:var(--mut)">Balanced plan</span></div>' }) +
+      '</div>';
+  }});
+
+  /* Act 4 — PulseLink */
+  scenes.push({ dur: 6, build: function () {
+    return '<div class="scene">' +
+      '<p class="kicker a1">03</p>' +
+      '<h1 class="title a2">PULSE<span style="font-size:.55em;vertical-align:middle;color:var(--cy)">LINK</span></h1>' +
+      '<p class="sub a3">Everything connected.</p>' +
+      panel({ html: '<div class="orb-rig a3">' +
+        '<div class="pulse"></div><div class="pulse l2"></div>' +
+        '<div class="orb orbA" style="color:var(--cy)">◈</div>' +
+        '<div class="orb orbB">P</div><div class="orb orbC">L</div></div>' +
+        '<div class="stats"><div class="stat"><b>6</b><span>DEVICES</span></div><div class="stat"><b>42ms</b><span>LATENCY</span></div><div class="stat"><b>UP</b><span>STATUS</span></div></div>' }) +
+      '</div>';
+  }});
+
+  /* Act 5 — BoostEngine */
+  scenes.push({ dur: 6, build: function () {
+    return '<div class="scene">' +
+      '<p class="kicker a1">04</p>' +
+      '<h1 class="title a2">BOOST <span style="font-size:.55em;vertical-align:middle;color:var(--gold)">ENGINE</span></h1>' +
+      '<p class="sub a3">Clean up. One tap. Full power.</p>' +
+      panel({ html: '<div class="boost-meter"><div style="width:100%"></div></div>' +
+        '<p style="text-align:center;color:var(--mut);font-size:13px;margin-top:10px"><b style="color:var(--gold)">3.2 GB</b> reclaimed • 1,240 files cleaned</p>' +
+        '<p style="text-align:center;margin-top:8px"><span class="play" style="background:linear-gradient(90deg,var(--gold),var(--gold2));color:#1a1206">⚡ Boost now</span></p>' }) +
+      '</div>';
+  }});
+
+  /* Act 6 — LuminaStudio */
+  scenes.push({ dur: 6, build: function () {
+    return '<div class="scene">' +
+      '<p class="kicker a1">05</p>' +
+      '<h1 class="title a2">LUMINA <span style="font-size:.55em;vertical-align:middle;color:var(--mg)">STUDIO</span></h1>' +
+      '<p class="sub a3">Bring it to light.</p>' +
+      panel({ html: '<div class="brush a3"><div class="dot d1"></div><div class="dot d2"></div><div class="dot d3"></div></div>' +
+        '<div class="timeline-row">' + [0,1,2,3,4].map(function(i){return '<div class="tline"><div style="width:'+(40+i*12)+'%;animation-delay:'+(i*.15)+'s"></div></div>';}).join('') + '</div>' }) +
+      '</div>';
+  }});
+
+  /* Act 7 — StreamForge */
+  scenes.push({ dur: 6, build: function () {
+    return '<div class="scene">' +
+      '<p class="kicker a1">06</p>' +
+      '<h1 class="title a2">STREAM <span style="font-size:.55em;vertical-align:middle;color:var(--gr)">FORGE</span></h1>' +
+      '<p class="sub a3">Go live, beautifully.</p>' +
+      panel({ html: '<div class="prow"><span class="live-badge">LIVE</span><div class="viewers">12,480 <span style="font-size:12px;color:var(--mut)">viewers</span></div></div>' +
+        '<div class="chat"><span>◈ ForgeHero: epic stream today 🔥</span><span>◈ Lux: the RGB setup is insane</span><span>◈ Grad: free forever, no ads — respect</span></div>' }) +
+      '</div>';
+  }});
+
+  /* Act 8 — final card */
+  scenes.push({ dur: 5, build: function () {
+    return '<div id="riseParticles"></div>' +
+      '<div class="scene">' +
+      diamondGlyph(true) +
+      '<h1 class="title gold a2">FORGESTUDIO<span style="font-size:.55em;vertical-align:middle">·303</span></h1>' +
+      '<p class="sub a3">Six tools. Every platform. Free forever.</p>' +
+      '<p class="kicker a4">Open source • MIT • Built by Souhail</p>' +
+      '</div>';
+  }});
+
+  var total = scenes.reduce(function (s, x) { return s + x.dur; }, 0);
+  var cur = -1, timer = null, live = false;
+
+  function particles() {
+    var host = document.getElementById('riseParticles');
+    if (!host) return;
+    for (var i = 0; i < 40; i++) {
+      var s = document.createElement('span');
+      s.style.left = Math.random() * 100 + 'vw';
+      s.style.width = s.style.height = (2 + Math.random() * 3) + 'px';
+      s.style.animationDuration = (4 + Math.random() * 5) + 's';
+      s.style.animationDelay = (Math.random() * 4) + 's';
+      s.style.background = Math.random() > .5 ? GOLD : CYAN;
+      host.appendChild(s);
+    }
+  }
+
+  function show(i) {
+    film.innerHTML = '';
+    film.appendChild(document.createRange().createContextualFragment(scenes[i].build()));
+    film.querySelector('.scene').classList.add('live');
+    if (i === scenes.length - 1) {
+      particles();
+      var sc = document.getElementById('scanline');
+      if (sc) sc.style.display = 'block';
+    }
+  }
+
+  function play(from) {
+    if (timer) clearTimeout(timer);
+    live = true;
+    cur = from || 0;
+    show(cur);
+    step();
+    audio.start();
+  }
+
+  function step() {
+    if (!live) return;
+    var pct = 0;
+    for (var i = 0; i < cur; i++) pct += scenes[i].dur;
+    pct += 0; // bar handled on tick instead
+    prog.style.width = (pct / total * 100) + '%';
+    timer = setTimeout(function () {
+      cur++;
+      if (cur >= scenes.length) {
+        prog.style.width = '100%';
+        live = false;
+        setTimeout(function () { play(0); }, 1600);
+        return;
+      }
+      var p = 0;
+      for (var q = 0; q < cur; q++) p += scenes[q].dur;
+      prog.style.width = (p / total * 100) + '%';
+      show(cur);
+      step();
+    }, scenes[cur].dur * 1000);
+  }
+
+  /* ambient audio */
+  var audio = { on: true, ctx: null, nodes: [], start: function () {
+    if (!this.on || this.ctx) return;
+    try {
+      var c = new (window.AudioContext || window.webkitAudioContext)();
+      this.ctx = c;
+      var g = c.createGain(); g.gain.value = .028; g.connect(c.destination);
+      var f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 480; f.connect(g);
+      var t = c.createOscillator(); t.type = 'sine'; t.frequency.value = 110; t.connect(f); t.start();
+      var t2 = c.createOscillator(); t2.type = 'sine'; t2.frequency.value = 165; t2.connect(f); t2.start();
+      var lfo = c.createOscillator(); lfo.frequency.value = .12; var lg = c.createGain(); lg.gain.value = 220;
+      lfo.connect(lg); lg.connect(t2.frequency); lfo.start();
+      this.nodes = [t, t2, lfo];
+      btnAudio.textContent = '♫ Sound: ON';
+    } catch (_) { this.on = false; btnAudio.textContent = '♫ Sound: OFF'; }
+  }, stop: function () {
+    if (!this.ctx) return;
+    this.nodes.forEach(function (n) { try { n.stop(); } catch (_) {}; });
+    this.ctx.close(); this.ctx = null;
+    this.stopAll();
+  }, stopAll: function () {} };
+
+  btnAudio.addEventListener('click', function () {
+    audio.on = !audio.on;
+    if (audio.on) { audio.start(); btnAudio.textContent = '♫ Sound: ON'; }
+    else { audio.stop(); btnAudio.textContent = '♫ Sound: OFF'; }
+  });
+  btnReplay.addEventListener('click', function () { play(0); });
+
+  play(0);
+})();
+</script>
+</body>
+</html>
