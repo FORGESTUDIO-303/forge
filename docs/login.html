@@ -94,7 +94,7 @@
   });
   document.querySelectorAll('[data-sso]').forEach(function (b) {
     b.addEventListener('click', function () {
-      window.location.href = API + '/auth/' + b.dataset.sso;
+      window.location.href = API + '/oauth-' + b.dataset.sso;
     });
   });
   // OAuth landing: /login.html?token=... or ?error=...
