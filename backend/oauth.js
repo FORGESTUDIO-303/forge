@@ -5,7 +5,7 @@
 const { Issuer } = require('openid-client');
 const db = require('./db');
 
-const SITE_URL = (process.env.SITE_URL || 'http://localhost:3000').replace(/\/$/, '');
+const SITE_URL = (process.env.SITE_URL || 'https://forgestudio-303.github.io/forge').replace(/\/$/, '');
 const API_URL = (process.env.API_URL || 'http://localhost:3000').replace(/\/$/, '');
 
 function redirect(path, params) {
