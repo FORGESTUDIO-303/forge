@@ -16,6 +16,7 @@ class ForgeColors {
   static const gr = Color(0xFF34D399);
   static const gold = Color(0xFFE8C15A);
   static const gold2 = Color(0xFFB98A2E);
+  static const red = Color(0xFFFF2D3F);
   static const onCy = Color(0xFF04121A);
 
   static Color tint(Color c, double alpha) => c.withValues(alpha: alpha);
